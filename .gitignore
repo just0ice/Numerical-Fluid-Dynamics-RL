@@ -2,3 +2,6 @@ main.exe
 .vscode/tasks.json
 The Program.code-workspace
 a.exe
+workspace.code-workspace
+.vscode/c_cpp_properties.json
+.vscode/The-Program.code-workspace
