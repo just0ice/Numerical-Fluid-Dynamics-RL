@@ -10,6 +10,8 @@ int grid::READ_PARAMETER(string inputfile){
     // grid dimensions
     imax = 2;
     jmax = 2;
+    xlength = 10;
+    ylength = 5;
 
     return 0;
 }

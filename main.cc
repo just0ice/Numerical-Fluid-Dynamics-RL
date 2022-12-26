@@ -7,6 +7,6 @@ int main()
     grid1.INIT_TEST_DATA();
     grid1.PRINT_U();
     grid1.CLEAR_OUTPUT_FILES();
-    grid1.ADD_TO_FILE();
+    grid1.OUTPUTVEC();
     return 0;
 }

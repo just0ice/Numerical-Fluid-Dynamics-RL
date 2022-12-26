@@ -17,7 +17,7 @@ public:
 
     // 3.3.1 Problem Parameters and Data Structures
     // Geometry data
-    double xlenghth, ylength;
+    double xlength, ylength;
     unsigned imax, jmax; // book says int but this should hopefully be ok. reevaluate if imax / jmax are used for arithmetics
     double delx, dely;
 
@@ -59,9 +59,10 @@ public:
     int POISSON();
     void ADAP_UV();
 
-    // additional member functions  
+    // additional member functions. can be found in misc.cc
     void PRINT_U(); // print U as a matrix into the Terminal
-    void ADD_TO_FILE();
+    void ADD_TO_FILE(string fname, vector<double> X);
+    void OUTPUTVEC(); // see 4.1.4 on page 54 
     void CLEAR_OUTPUT_FILES();
     void INIT_TEST_DATA();
 };
