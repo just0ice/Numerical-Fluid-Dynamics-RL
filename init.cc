@@ -8,16 +8,15 @@ int grid::READ_PARAMETER(string inputfile){
     PI = 0;
 
     // grid dimensions
-    imax = 10;
-    jmax = 10;
-    n_ghost = 2;
+    imax = 2;
+    jmax = 2;
 
     return 0;
 }
 
 void grid::INIT_UVP(){
 
-    U = vector<double>((imax + 2*n_ghost)*(jmax + 2*n_ghost),UI); // taking a 1D vector. Pseudo 2D conversion is i = x + width*y, x = i % width; y = i / width. Ghost zones at corresponding i,j.
-    V = vector<double>((imax + 2*n_ghost)*(jmax + 2*n_ghost),VI);
-    P = vector<double>((imax + 2*n_ghost)*(jmax + 2*n_ghost),PI);
+    U = vector<double>((imax + 1)*(jmax + 1),UI); // taking a 1D vector. Pseudo 2D conversion is i = x + width*y, x = i % width; y = i / width. Ghost zones at corresponding i,j.
+    V = vector<double>((imax + 1)*(jmax + 1),VI);
+    P = vector<double>((imax + 1)*(jmax + 1),PI);
 }
