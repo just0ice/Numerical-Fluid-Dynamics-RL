@@ -44,6 +44,7 @@ public:
 
     // Data arrays
     vector<double> U, V, P; // not sure wether its better to use array here for performance. might be a problem because of fixed length so need to be carefull when to initialize. lets keep vector for now
+    vector<double> Ucc, Vcc; // cell centered averaged. P is already cell centered
     vector<double> RHS;
     vector<double> F,G;
 
@@ -60,9 +61,10 @@ public:
     void ADAP_UV();
 
     // additional member functions. can be found in misc.cc
-    void PRINT_U(); // print U as a matrix into the Terminal
-    void ADD_TO_FILE(string fname, vector<double> X);
+    void PRINT_UVP(); // print U as a matrix into the Terminal
+    void ADD_TO_FILE(string fname, vector<double> X); // writes vector X to file fname
     void OUTPUTVEC(); // see 4.1.4 on page 54 
+    void CC_AVERAGE_UV(); // computes the cc average of U and V and stores the result in Ucc and Vcc
     void CLEAR_OUTPUT_FILES();
     void INIT_TEST_DATA();
 };

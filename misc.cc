@@ -1,11 +1,28 @@
 #include "grid.h"
 
-void grid::PRINT_U(){
-    for (auto i=0; i != imax + 2; ++i){
-        for (auto j=0; j != jmax + 2; ++j)
-            cout << U[i + (imax+2)*j] << " ";
+void PRINT_TO_TERMINAL(vector<double> X, unsigned imax, unsigned jmax){
+    for (auto i=0; i != imax + 1; ++i){
+        for (auto j=0; j != jmax + 1; ++j){
+            cout << X[i + (imax+1)*j] << " ";
+        }
         cout << "\n";
     } 
+}
+
+void grid::PRINT_UVP(){
+    cout << "U" << endl;
+    PRINT_TO_TERMINAL(U,imax+1,jmax+1);
+    cout << "V" << endl;
+    PRINT_TO_TERMINAL(V,imax+1,jmax+1);
+    cout << "P" << endl;
+    PRINT_TO_TERMINAL(P,imax+1,jmax+1);
+
+    if (Ucc.empty() || Vcc.empty())
+        CC_AVERAGE_UV();
+    cout << "Ucc" << endl;
+    PRINT_TO_TERMINAL(Ucc,imax,jmax);
+    cout << "Vcc" << endl;
+    PRINT_TO_TERMINAL(Vcc,imax,jmax);
     cout << "done" << endl;
 }
 
@@ -25,18 +42,33 @@ void grid::ADD_TO_FILE(string fname, vector<double> X){
     cout << fname << " updated." << endl;
 }
 
+void grid::CC_AVERAGE_UV(){
+    double average; // temporary variable for better readability
+    
+    for (auto i=1; i != imax + 2; ++i){
+        for (auto j=1; j != jmax + 2; ++j){
+            average = (U[i + (imax+2) * j] + U[(i-1) + (imax+2) * (j-1)]) / 2;
+            Ucc.push_back(average);
+            average = (V[i + (imax+2) * j] + V[(i-1) + (imax+2) * (j-1)]) / 2;
+            Vcc.push_back(average);
+        }
+    }
+}
+
 void grid::OUTPUTVEC(){
-    ADD_TO_FILE("U.tsv", U);
-    ADD_TO_FILE("V.tsv", V);
+    if (Ucc.empty() || Vcc.empty())
+        CC_AVERAGE_UV();
+    ADD_TO_FILE("Ucc.tsv", Ucc);
+    ADD_TO_FILE("Vcc.tsv", Vcc);
     ADD_TO_FILE("P.tsv", P);
 }
 
 
 void grid::CLEAR_OUTPUT_FILES(){
     std::ofstream file;
-    file.open("U.tsv", std::ofstream::out | std::ofstream::trunc);
+    file.open("Ucc.tsv", std::ofstream::out | std::ofstream::trunc);
     file.close();
-    file.open("V.tsv", std::ofstream::out | std::ofstream::trunc);
+    file.open("Vcc.tsv", std::ofstream::out | std::ofstream::trunc);
     file.close();
     file.open("P.tsv", std::ofstream::out | std::ofstream::trunc);
     file.close();
