@@ -16,7 +16,7 @@ int grid::READ_PARAMETER(string inputfile){
 
 void grid::INIT_UVP(){
 
-    U = vector<double>((imax + 1)*(jmax + 1),UI); // taking a 1D vector. Pseudo 2D conversion is i = x + width*y, x = i % width; y = i / width. Ghost zones at corresponding i,j.
-    V = vector<double>((imax + 1)*(jmax + 1),VI);
-    P = vector<double>((imax + 1)*(jmax + 1),PI);
+    U = vector<double>((imax + 2)*(jmax + 2),UI); // taking a 1D vector. Pseudo 2D conversion is i = x + width*y, x = i % width; y = i / width. Ghost zones at corresponding i,j.
+    V = vector<double>((imax + 2)*(jmax + 2),VI);
+    P = vector<double>((imax + 2)*(jmax + 2),PI);
 }

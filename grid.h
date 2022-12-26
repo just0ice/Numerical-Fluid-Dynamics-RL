@@ -63,4 +63,5 @@ public:
     void PRINT_U(); // print U as a matrix into the Terminal
     void ADD_TO_FILE();
     void CLEAR_OUTPUT_FILES();
+    void INIT_TEST_DATA();
 };
