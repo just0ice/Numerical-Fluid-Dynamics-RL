@@ -14,21 +14,33 @@ void grid::ADD_TO_FILE(){
     std::ofstream file;
     
     file.open ("U.tsv", std::ios_base::app);
-    for (auto i = U.cbegin(); i != U.cend() ; ++i)
-        file << *i << "\t";
+    file << imax << "\t" << jmax << endl;
+    for (auto i = U.cbegin(); i != U.cend() ; ++i){
+        if (i == U.cbegin())
+            file << *i;
+        else file << "\t" << *i;
+    }
     file << endl;
     file.close();
     
     //Repeteat for V and P
     file.open ("V.tsv", std::ios_base::app);
-    for (auto i= V.cbegin(); i!= V.cend() ; ++i)
-        file << *i<< "\t";
+    file << imax << "\t" << jmax << endl;
+    for (auto i = V.cbegin(); i != V.cend() ; ++i){
+        if (i == V.cbegin())
+            file << *i;
+        else file << "\t" << *i;
+    }
     file << endl;
     file.close();
 
     file.open ("P.tsv", std::ios_base::app);
-    for (auto i= P.cbegin(); i!= P.cend() ; ++i)
-        file << *i<< "\t";
+    file << imax << "\t" << jmax << endl;
+    for (auto i = P.cbegin(); i != P.cend() ; ++i){
+        if (i == P.cbegin())
+            file << *i;
+        else file << "\t" << *i;
+    }
     file << endl;
     file.close();
 
@@ -49,20 +61,29 @@ void grid::CLEAR_OUTPUT_FILES(){
 void grid::INIT_TEST_DATA(){
     // inside
     for (auto i=1; i != imax + 1; ++i){
-        for (auto j=1; j != jmax + 1; ++j)
+        for (auto j=1; j != jmax + 1; ++j){
             U[i + (imax+2)*j] = i;
+            V[i + (imax+2)*j] = i;
+            P[i + (imax+2)*j] = i;
+        }
     } 
 
     unsigned boundi[2] = {0,imax+1};
     unsigned boundj[2] = {0,jmax+1};
     
     for (auto i : boundi){
-        for (auto j=0; j != jmax + 2; ++j)
+        for (auto j=0; j != jmax + 2; ++j){
             U[i + (imax+2)*j] = -1;
+            V[i + (imax+2)*j] = -1;
+            P[i + (imax+2)*j] = -1;
+        }
     } 
     for (auto j : boundj){
-        for (auto i=0; i != jmax + 2; ++i)
+        for (auto i=0; i != imax + 2; ++i){
             U[i + (imax+2)*j] = -1;
+            V[i + (imax+2)*j] = -1;
+            P[i + (imax+2)*j] = -1;
+        }
     } 
 
     cout << "done" << endl;
