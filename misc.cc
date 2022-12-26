@@ -10,42 +10,27 @@ void grid::PRINT_U(){
 }
 
 // write UVP into a tsv file. 3 files for each U,V,P. one line per time stamp
-void grid::ADD_TO_FILE(){
+void grid::ADD_TO_FILE(string fname, vector<double> X){
     std::ofstream file;
     
-    file.open ("U.tsv", std::ios_base::app);
-    file << imax << "\t" << jmax << endl;
-    for (auto i = U.cbegin(); i != U.cend() ; ++i){
-        if (i == U.cbegin())
+    file.open (fname, ios_base::app);
+    file << imax << "\t" << jmax << "\t" << xlength << "\t" << ylength << endl;
+    for (auto i = X.cbegin(); i != X.cend() ; ++i){
+        if (i == X.cbegin())
             file << *i;
         else file << "\t" << *i;
     }
     file << endl;
     file.close();
-    
-    //Repeteat for V and P
-    file.open ("V.tsv", std::ios_base::app);
-    file << imax << "\t" << jmax << endl;
-    for (auto i = V.cbegin(); i != V.cend() ; ++i){
-        if (i == V.cbegin())
-            file << *i;
-        else file << "\t" << *i;
-    }
-    file << endl;
-    file.close();
-
-    file.open ("P.tsv", std::ios_base::app);
-    file << imax << "\t" << jmax << endl;
-    for (auto i = P.cbegin(); i != P.cend() ; ++i){
-        if (i == P.cbegin())
-            file << *i;
-        else file << "\t" << *i;
-    }
-    file << endl;
-    file.close();
-
-    cout << "Complete: grid written to files" << endl;
+    cout << fname << " updated." << endl;
 }
+
+void grid::OUTPUTVEC(){
+    ADD_TO_FILE("U.tsv", U);
+    ADD_TO_FILE("V.tsv", V);
+    ADD_TO_FILE("P.tsv", P);
+}
+
 
 void grid::CLEAR_OUTPUT_FILES(){
     std::ofstream file;
