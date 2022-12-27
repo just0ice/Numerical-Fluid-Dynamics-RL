@@ -65,4 +65,5 @@ plt.imshow(P, extent = extent, origin="lower", cmap="Blues")
 
 #plt.tight_layout()
 plt.colorbar(label=r"$P$")
+plt.savefig("plot.pdf")
 plt.show()
