@@ -1,8 +1,8 @@
 #include "grid.h"
 
 void PRINT_TO_TERMINAL(vector<double> X, unsigned iend, unsigned jend){
-    for (auto i=0; i != iend + 1; ++i){
-        for (auto j=0; j != jend + 1; ++j){
+    for (auto j=jend+1; j-- > 0; ){
+        for (auto i=0; i != iend + 1; ++i){
             cout << X[i + (iend+1)*j] << " ";
         }
         cout << "\n";
@@ -48,8 +48,8 @@ void grid::ADD_TO_FILE(string fname, vector<double> X){
 void grid::CC_AVERAGE_UV(){
     double average; // temporary variable for better readability
     
-    for (auto i=1; i != imax + 1; ++i){
-        for (auto j=1; j != jmax + 1; ++j){
+    for (auto j=1; j != jmax + 1; ++j){
+        for (auto i=1; i != imax + 1; ++i){
             // Average to calculate Ucc and Vcc on physical cells (without boundary)
             average = (U[i + (imax+2) * j] + U[(i-1) + (imax+2) * j]) / 2;
             Ucc.push_back(average);
@@ -86,11 +86,11 @@ void grid::CLEAR_OUTPUT_FILES(){
 // Initialize test data with increasing values on each line and -1 at boundary
 void grid::INIT_TEST_DATA(){
     // inside
-    for (auto i=1; i != imax + 1; ++i){
-        for (auto j=1; j != jmax + 1; ++j){
-            U[i + (imax+2)*j] = i;
-            V[i + (imax+2)*j] = i;
-            P[i + (imax+2)*j] = i;
+    for (auto j=1; j != jmax + 1; ++j){
+        for (auto i=1; i != imax + 1; ++i){
+            U[i + (imax+2)*j] = j;
+            V[i + (imax+2)*j] = j;
+            P[i + (imax+2)*j] = j;
         }
     } 
 
