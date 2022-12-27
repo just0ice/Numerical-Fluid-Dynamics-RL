@@ -1,9 +1,9 @@
 #include "grid.h"
 
-void PRINT_TO_TERMINAL(vector<double> X, unsigned imax, unsigned jmax){
-    for (auto i=0; i != imax + 1; ++i){
-        for (auto j=0; j != jmax + 1; ++j){
-            cout << X[i + (imax+1)*j] << " ";
+void PRINT_TO_TERMINAL(vector<double> X, unsigned iend, unsigned jend){
+    for (auto i=0; i != iend + 1; ++i){
+        for (auto j=0; j != jend + 1; ++j){
+            cout << X[i + (iend+1)*j] << " ";
         }
         cout << "\n";
     } 
@@ -17,26 +17,29 @@ void grid::PRINT_UVP(){
     cout << "P" << endl;
     PRINT_TO_TERMINAL(P,imax+1,jmax+1);
 
-    if (Ucc.empty() || Vcc.empty())
+    if (Ucc.empty() || Vcc.empty() || Pcc.empty())
         CC_AVERAGE_UV();
     cout << "Ucc" << endl;
-    PRINT_TO_TERMINAL(Ucc,imax,jmax);
+    PRINT_TO_TERMINAL(Ucc,imax-1,jmax-1);
     cout << "Vcc" << endl;
-    PRINT_TO_TERMINAL(Vcc,imax,jmax);
+    PRINT_TO_TERMINAL(Vcc,imax-1,jmax-1);
+    cout << "Pcc" << endl;
+    PRINT_TO_TERMINAL(Pcc,imax-1,jmax-1);
     cout << "done" << endl;
 }
 
 // write UVP into a tsv file. 3 files for each U,V,P. one line per time stamp
 void grid::ADD_TO_FILE(string fname, vector<double> X){
     std::ofstream file;
-    
     file.open (fname, ios_base::app);
     file << imax << "\t" << jmax << "\t" << xlength << "\t" << ylength << endl;
+
     for (auto i = X.cbegin(); i != X.cend() ; ++i){
         if (i == X.cbegin())
             file << *i;
         else file << "\t" << *i;
     }
+
     file << endl;
     file.close();
     cout << fname << " updated." << endl;
@@ -45,22 +48,28 @@ void grid::ADD_TO_FILE(string fname, vector<double> X){
 void grid::CC_AVERAGE_UV(){
     double average; // temporary variable for better readability
     
-    for (auto i=1; i != imax + 2; ++i){
-        for (auto j=1; j != jmax + 2; ++j){
-            average = (U[i + (imax+2) * j] + U[(i-1) + (imax+2) * (j-1)]) / 2;
+    for (auto i=1; i != imax + 1; ++i){
+        for (auto j=1; j != jmax + 1; ++j){
+            // Average to calculate Ucc and Vcc on physical cells (without boundary)
+            average = (U[i + (imax+2) * j] + U[(i-1) + (imax+2) * j]) / 2;
             Ucc.push_back(average);
-            average = (V[i + (imax+2) * j] + V[(i-1) + (imax+2) * (j-1)]) / 2;
+            average = (V[i + (imax+2) * j] + V[i + (imax+2) * (j-1)]) / 2;
             Vcc.push_back(average);
+
+            // copy physical cells for P (without boundarys)
+            Pcc.push_back(P[i + (imax+2) * j]);
         }
     }
+
+
 }
 
 void grid::OUTPUTVEC(){
-    if (Ucc.empty() || Vcc.empty())
+    if (Ucc.empty() || Vcc.empty() || Pcc.empty())
         CC_AVERAGE_UV();
     ADD_TO_FILE("Ucc.tsv", Ucc);
     ADD_TO_FILE("Vcc.tsv", Vcc);
-    ADD_TO_FILE("P.tsv", P);
+    ADD_TO_FILE("Pcc.tsv", Pcc);
 }
 
 

@@ -18,7 +18,8 @@ public:
     // 3.3.1 Problem Parameters and Data Structures
     // Geometry data
     double xlength, ylength;
-    unsigned imax, jmax; // book says int but this should hopefully be ok. reevaluate if imax / jmax are used for arithmetics
+    unsigned imax, jmax;    // book says int but this should hopefully be ok. reevaluate if imax / jmax are used for arithmetics
+                            // Caution! Matric is A_ji. j counts rows, i counts columns (annoying but coherent with the book)
     double delx, dely;
 
     // Time-stepping data
@@ -44,7 +45,7 @@ public:
 
     // Data arrays
     vector<double> U, V, P; // not sure wether its better to use array here for performance. might be a problem because of fixed length so need to be carefull when to initialize. lets keep vector for now
-    vector<double> Ucc, Vcc; // cell centered averaged. P is already cell centered
+    vector<double> Ucc, Vcc, Pcc; // cell centered averaged and taken only physical cells (not on boundary). P was already cell centered
     vector<double> RHS;
     vector<double> F,G;
 
