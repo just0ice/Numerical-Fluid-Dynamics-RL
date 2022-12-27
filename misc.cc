@@ -75,12 +75,11 @@ void grid::OUTPUTVEC(){
 
 void grid::CLEAR_OUTPUT_FILES(){
     std::ofstream file;
-    file.open("Ucc.tsv", std::ofstream::out | std::ofstream::trunc);
-    file.close();
-    file.open("Vcc.tsv", std::ofstream::out | std::ofstream::trunc);
-    file.close();
-    file.open("P.tsv", std::ofstream::out | std::ofstream::trunc);
-    file.close();
+
+    for (auto fname : {"Ucc.tsv","Vcc.tsv","Pcc.tsv"}){
+        file.open(fname, std::ofstream::out | std::ofstream::trunc);
+        file.close();
+    }
 }
 
 // Initialize test data with increasing values on each line and -1 at boundary
@@ -88,9 +87,9 @@ void grid::INIT_TEST_DATA(){
     // inside
     for (auto j=1; j != jmax + 1; ++j){
         for (auto i=1; i != imax + 1; ++i){
-            U[i + (imax+2)*j] = j;
-            V[i + (imax+2)*j] = j;
-            P[i + (imax+2)*j] = j;
+            U[i + (imax+2)*j] = i + (imax+2)*j;
+            V[i + (imax+2)*j] = i + (imax+2)*j;
+            P[i + (imax+2)*j] = i + (imax+2)*j;
         }
     } 
 
