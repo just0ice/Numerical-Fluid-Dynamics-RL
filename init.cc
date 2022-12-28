@@ -46,6 +46,13 @@ int grid::READ_PARAMETER(){
     cout << "gamma " << gamma << ", Re " << Re << ", GX " << GX << ", GY " << GY << ", UI " << UI << endl;
     cout << "VI " << VI << ", PI " << PI << ", wW " << wW << ", wE " << wE << ", wN " << wN << ", wS " << wS << endl;
 
+
+    // compute delx, dely
+    // physical grid spacing according to 3.1.1 p. 22. ghost zones are outside xlength x ylength!
+    delx = xlength / imax;
+    dely = xlength / jmax;
+    cout << "delx = " << delx << ", dely = " << dely << endl;
+
     return 0;
 }
 
@@ -56,4 +63,30 @@ void grid::INIT_UVP(){
     U = vector<double>((imax + 2)*(jmax + 2),UI); 
     V = vector<double>((imax + 2)*(jmax + 2),VI);
     P = vector<double>((imax + 2)*(jmax + 2),PI);
+}
+
+void grid::COMP_DELT(){
+    // according to 3.50
+    auto Umax_ptr = max_element(U.cbegin(), U.cend());
+    auto Vmax_ptr = max_element(V.cbegin(), V.cend());
+    double Umax = *Umax_ptr;
+    double Vmax = *Vmax_ptr;
+
+    cout << "Umax = " << Umax << ", Vmax = " << Vmax << endl;
+    if (Umax == 0){
+        if (Vmax == 0)
+            delt = tau * Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) );
+        else
+            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), dely/Vmax );
+    } 
+    else {
+        if (Vmax == 0)
+            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/Umax );
+        else
+            delt = tau * min( {Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/Umax , dely/Vmax});
+    }
+
+    //delt = min(delx, dely);
+    cout << "delt = " << delt << endl;
+
 }

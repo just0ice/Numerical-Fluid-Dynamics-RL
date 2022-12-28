@@ -2,13 +2,13 @@
 # xlength, ylength, imax, jmax, t_end, tau, itermax, eps, omg, gamma, Re, GX, GY, UI, VI, PI, wW, wE, wN, wS 
 #
 # xlength
-1.0
+10.0
 # ylength
-1.0
+5.0
 # imax
-128
+2
 # jmax
-128
+2
 # t_end
 0
 # tau

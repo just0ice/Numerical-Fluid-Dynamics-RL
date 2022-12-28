@@ -3,6 +3,8 @@
 #include <vector>
 #include <array>
 #include <fstream>
+#include <math.h> // for absolute value in COMP_DELT
+#include <algorithm> // min, max of a vector
 
 using namespace::std;
 
