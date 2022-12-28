@@ -11,10 +11,8 @@ class grid
 private:
     // make most of the stuff private later 
 public:
-    // construction and deconstructions
-    grid(/* args */);
-    ~grid();
-
+    grid(); // constructer
+    ~grid(); // deconstructer
     // 3.3.1 Problem Parameters and Data Structures
     // Geometry data
     double xlength, ylength;
@@ -43,6 +41,9 @@ public:
     unsigned wW, wE, wN, wS;
     char problem;
 
+    // input file
+    string inputfile = "settings.in";
+
     // Data arrays
     vector<double> U, V, P; // not sure wether its better to use array here for performance. might be a problem because of fixed length so need to be carefull when to initialize. lets keep vector for now
     vector<double> Ucc, Vcc, Pcc; // cell centered averaged and taken only physical cells (not on boundary). P was already cell centered
@@ -51,11 +52,14 @@ public:
 
     // 3.34 The Program
     // declar member functions according to p.43
-    int READ_PARAMETER(string inputfile);
+    // init.cc
+    int READ_PARAMETER();
     void INIT_UVP();
     void COMP_DELT();
+    // boundary.cc
     void SETBCOND();
     void SETSPECBCOND();
+    //uvp.cc
     void COMP_FG();
     void COMP_RHS();
     int POISSON();
