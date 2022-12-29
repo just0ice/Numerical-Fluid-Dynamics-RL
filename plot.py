@@ -52,10 +52,10 @@ dy = ylength/jmax
 X, Y = np.meshgrid(dx/2 + np.arange(0,xlength,dx), dy/2 + np.arange(0,ylength,dy))
 #X, Y = np.meshgrid(np.arange(0,1,1/imax), np.arange(0,1,1/jmax)) # square grid
 #X, Y = np.mgrid[0:xlength:((imax)*1j), 0:ylength:((jmax)*1j)]
-print("U")
-print(U)
-print("V")
-print(V)
+#print("U")
+#print(U)
+#print("V")
+#print(V)
 fig = plt.figure(frameon=False)
 if speed.max() != 0:
     lw = 5*speed / speed.max()
