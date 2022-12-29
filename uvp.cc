@@ -3,9 +3,12 @@
 
 void grid::COMP_SPATIAL_DERIVATIVES(){
     // Computes the spatial derivatives according to 3.19
-    U[id(1,2)] = 1;
-    V[id(1,2)] = 2;
-    cout << "Here: " << U[id(1,2)]  << endl;
+    
+    // Test calculations
+    U[id(2,2)] = 1;
+    V[id(2,2)] = 2;
+    P[id(2,2)] = 3;
+
     // 3.19a
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax; ++i){
@@ -19,6 +22,12 @@ void grid::COMP_SPATIAL_DERIVATIVES(){
 
                     + gamma * 1/dely * ( abs(V[id(i,j)] + V[id(i+1,j)])/2 * (U[id(i,j)] - U[id(i,j+1)])/2  
                     - abs(V[id(i,j-1)] + V[id(i+1,j-1)])/2 * (U[id(i,j-1)] - U[id(i,j)])/2 );
+            d2u_dx2[id(i,j)] =
+                ( U[id(i+1,j)] - 2*U[id(i,j)] + U[id(i-1,j)] ) / pow(delx, 2);
+            d2u_dy2[id(i,j)] =
+                ( U[id(i,j+1)] - 2*U[id(i,j)] + U[id(i,j-1)] ) / pow(dely, 2);
+            dp_dx[id(i,j)] =
+                ( P[id(i+1,j)] - P[id(i,j)] ) / delx;
         }
     }
     cout << "Spatial derivatives computed." << endl;
