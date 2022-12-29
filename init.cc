@@ -63,7 +63,11 @@ void grid::INIT_UVP(){
     U = vector<double>((imax + 2)*(jmax + 2),UI); 
     V = vector<double>((imax + 2)*(jmax + 2),VI);
     P = vector<double>((imax + 2)*(jmax + 2),PI);
-}
+
+    // Spatial derivatives
+    // Initialize at same size as UVP although not all elements will be used. This is to keep indexing consistent with UVP
+    du2_dx = vector<double>((imax + 2)*(jmax + 2),0); 
+}   
 
 void grid::COMP_DELT(){
     // according to 3.50
@@ -77,13 +81,13 @@ void grid::COMP_DELT(){
         if (Vmax == 0)
             delt = tau * Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) );
         else
-            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), dely/Vmax );
+            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), dely/abs(Vmax) );
     } 
     else {
         if (Vmax == 0)
-            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/Umax );
+            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/abs(Umax) );
         else
-            delt = tau * min( {Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/Umax , dely/Vmax});
+            delt = tau * min( {Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/abs(Umax) , dely/abs(Vmax)});
     }
 
     //delt = min(delx, dely);
