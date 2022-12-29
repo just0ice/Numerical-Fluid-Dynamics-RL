@@ -28,6 +28,8 @@ void grid::PRINT_UVP(){
 
     cout << "du2_dx" << endl;
     PRINT_TO_TERMINAL(du2_dx,imax+1,jmax+1);
+    cout << "duv_dy" << endl;
+    PRINT_TO_TERMINAL(duv_dy,imax+1,jmax+1);
 
     cout << "done" << endl;
 }

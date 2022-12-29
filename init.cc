@@ -66,7 +66,18 @@ void grid::INIT_UVP(){
 
     // Spatial derivatives
     // Initialize at same size as UVP although not all elements will be used. This is to keep indexing consistent with UVP
+    // This might very will kill my memory
     du2_dx = vector<double>((imax + 2)*(jmax + 2),0); 
+    duv_dy = vector<double>((imax + 2)*(jmax + 2),0); 
+    d2u_dx2 = vector<double>((imax + 2)*(jmax + 2),0); 
+    d2u_dy2 = vector<double>((imax + 2)*(jmax + 2),0); 
+    dp_dx = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    duv_dx = vector<double>((imax + 2)*(jmax + 2),0); 
+    dv2_dy = vector<double>((imax + 2)*(jmax + 2),0); 
+    d2v_dx2 = vector<double>((imax + 2)*(jmax + 2),0); 
+    d2v_dy2 = vector<double>((imax + 2)*(jmax + 2),0); 
+    dp_dy = vector<double>((imax + 2)*(jmax + 2),0); 
 }   
 
 void grid::COMP_DELT(){

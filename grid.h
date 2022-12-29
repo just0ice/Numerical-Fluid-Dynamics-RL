@@ -53,7 +53,18 @@ public:
     vector<double> F,G;
 
     // Spatial derivatives to compute F, G
+    // If code to slow, try to allocate and deallocate temporary space for these quantities
     vector<double> du2_dx;
+    vector<double> duv_dy;
+    vector<double> d2u_dx2;
+    vector<double> d2u_dy2;
+    vector<double> dp_dx;
+
+    vector<double> duv_dx;
+    vector<double> dv2_dy;
+    vector<double> d2v_dx2;
+    vector<double> d2v_dy2;
+    vector<double> dp_dy;
 
     // 3.34 The Program
     // declar member functions according to p.43
