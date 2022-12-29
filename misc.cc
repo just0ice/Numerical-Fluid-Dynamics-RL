@@ -25,6 +25,10 @@ void grid::PRINT_UVP(){
     PRINT_TO_TERMINAL(Vcc,imax-1,jmax-1);
     cout << "Pcc" << endl;
     PRINT_TO_TERMINAL(Pcc,imax-1,jmax-1);
+
+    cout << "du2_dx" << endl;
+    PRINT_TO_TERMINAL(du2_dx,imax+1,jmax+1);
+
     cout << "done" << endl;
 }
 
@@ -112,4 +116,10 @@ void grid::INIT_TEST_DATA(){
     } 
 
     cout << "done" << endl;
+}
+
+unsigned grid::id(unsigned i, unsigned j){
+    // function to convert i,j to 1d index. Used for better readability of the code
+    return i + (imax+2)*j;
+
 }

@@ -52,11 +52,14 @@ public:
     vector<double> RHS;
     vector<double> F,G;
 
+    // Spatial derivatives to compute F, G
+    vector<double> du2_dx;
+
     // 3.34 The Program
     // declar member functions according to p.43
     // init.cc
     int READ_PARAMETER();
-    void INIT_UVP();
+    void INIT_UVP(); // and spatial derivatives
     void COMP_DELT();
     // boundary.cc
     void SETBCOND();
@@ -75,4 +78,8 @@ public:
     void CC_AVERAGE_UV(); // computes the cc average of U and V and stores the result in Ucc and Vcc
     void CLEAR_OUTPUT_FILES();
     void INIT_TEST_DATA();
+    unsigned id(unsigned i, unsigned j);
+
+    // more additional member functions
+    void COMP_SPATIAL_DERIVATIVES(); // according to 3.19
 };
