@@ -6,14 +6,20 @@ void grid::SETBCOND(){
     // 1 free-slip, 2 no-slip, 3 outflow, 4 periodic. see p. 41, to be added: Inflow condition
     // indexing: U[i + (imax+2)*j]
 
+    // Big Problem: When setting boundary conditions sometimes values are used that should already have been asigned 
+    // by other boundary conditions (for example example V for no-slip and j=jmax at wE and wW)
+    // The problem only seems to arise from the formulae for wW and wE
+    // To prevent this, the order of assignment is important (therefore its split into two switches here)
+    // void grid::CHECKBCOND() checks if all boundary equations are fulifilled simultaniously 
+
+
+    // first assignment /////////////////////////////////////////////////////////////////////////////////////////////////
     switch (wW){
     case 1:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.21
             U[imax + (imax+2)*j] = 0;
-            // 3.23
-            V[(imax+1) + (imax+2)*j] = - V[imax + (imax+2)*j];
         }
         break;
     case 2:
@@ -21,8 +27,6 @@ void grid::SETBCOND(){
         for (auto j=1; j != jmax+1; ++j){
             // 3.24
             U[imax + (imax+2)*j] = 0;
-            // 3.25
-            V[(imax+1) + (imax+2)*j] = V[imax + (imax+2)*j];
         }
         break;
     case 3:
@@ -30,7 +34,6 @@ void grid::SETBCOND(){
         for (auto j=1; j != jmax+1; ++j){
             // 3.26
             U[imax + (imax+2)*j] = U[(imax-1) + (imax+2)*j];
-            V[(imax+1) + (imax+2)*j] = V[imax + (imax+2)*j];
         }
         break;
     case 4:
@@ -53,8 +56,6 @@ void grid::SETBCOND(){
         for (auto j=1; j != jmax+1; ++j){
             // 3.21
             U[0 + (imax+2)*j] = 0;
-            // 3.23
-            V[0 + (imax+2)*j] = - V[1 + (imax+2)*j];
         }
         break;
     case 2:
@@ -62,15 +63,12 @@ void grid::SETBCOND(){
         for (auto j=1; j != jmax+1; ++j){
             // 3.24
             U[0 + (imax+2)*j] = 0;
-            // 3.25
-            V[0 + (imax+2)*j] = V[1 + (imax+2)*j];
         }
         break;
     case 3:
         // out-flow
         for (auto j=1; j != jmax+1; ++j){
             // 3.26
-            U[0 + (imax+2)*j] = U[1 + (imax+2)*j];
             V[0 + (imax+2)*j] = V[1 + (imax+2)*j];
         }
         break;
@@ -169,6 +167,79 @@ void grid::SETBCOND(){
         cout << "Faulty boundary condidtion for wN" << endl;
         break;
     }
+
+    // second assignment /////////////////////////////////////////////////////////////////////////////////////////////////
+    switch (wW){
+    case 1:
+        // No-slip
+        for (auto j=1; j != jmax+1; ++j){
+            // 3.23
+            V[(imax+1) + (imax+2)*j] = - V[imax + (imax+2)*j];
+        }
+        break;
+    case 2:
+        // Free-slip
+        for (auto j=1; j != jmax+1; ++j){
+            // 3.25
+            V[(imax+1) + (imax+2)*j] = V[imax + (imax+2)*j];
+        }
+        break;
+    case 3:
+        // out-flow
+        for (auto j=1; j != jmax+1; ++j){
+            // 3.26
+            V[(imax+1) + (imax+2)*j] = V[imax + (imax+2)*j];
+        }
+        break;
+    case 4:
+        // periodic, to be added 
+        // if wE = wW: full set of eq. 3.27 . if not -> error
+        cout << "Periodic boundary condition not yet implemented" << endl;
+        break;
+    case 5:
+        // inflow, to be added
+        cout << "Inflow condition not yet implemented" << endl;
+        break;
+    default:
+        cout << "Faulty boundary condidtion for wW" << endl;
+        break;
+    }
+
+    switch (wE){
+    case 1:
+        // No-slip
+        for (auto j=1; j != jmax+1; ++j){
+            // 3.23
+            V[0 + (imax+2)*j] = - V[1 + (imax+2)*j];
+        }
+        break;
+    case 2:
+        // Free-slip
+        for (auto j=1; j != jmax+1; ++j){
+            // 3.25
+            V[0 + (imax+2)*j] = V[1 + (imax+2)*j];
+        }
+        break;
+    case 3:
+        // out-flow
+        for (auto j=1; j != jmax+1; ++j){
+            // 3.26
+            U[0 + (imax+2)*j] = U[1 + (imax+2)*j];
+        }
+        break;
+    case 4:
+        // periodic, to be added 
+        // if wE = wW: nothing, already set by wW. if not -> error
+        cout << "Periodic boundary condition not yet implemented" << endl;
+        break;
+    case 5:
+        // inflow, to be added
+        cout << "Inflow condition not yet implemented" << endl;
+        break;
+    default:
+        cout << "Faulty boundary condidtion for wE" << endl;
+        break;
+    }
 }
 
 void check_cond(bool no_good, unsigned cond_val, string wall, string comp, unsigned index){
@@ -201,7 +272,7 @@ void check_cond(bool no_good, unsigned cond_val, string wall, string comp, unsig
 }
 
 void grid::CHECKBCOND(){
-    // check boundary conditions according to wW, wE, wN and wS
+    // check boundary conditions simultaniously according to wW, wE, wN and wS
     // 1 free-slip, 2 no-slip, 3 outflow, 4 periodic. see p. 41, to be added: Inflow condition
     // indexing: U[i + (imax+2)*j]
 
