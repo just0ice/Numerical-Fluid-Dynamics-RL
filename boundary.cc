@@ -295,7 +295,7 @@ void grid::CHECKBCOND(){
             if (U[imax + (imax+2)*j] != 0)
                 cout << "Warning! Free-slip boundary condition for U 3.24 not fulfilled at wW j = " << j << endl;
             // 3.25
-            if (V[(imax+1) + (imax+2)*j] = V[imax + (imax+2)*j])
+            if (V[(imax+1) + (imax+2)*j] != V[imax + (imax+2)*j])
                 cout << "Warning! Free-slip boundary condition for V 3.25 not fulfilled at wW j = " << j << endl;
         }
         break;
@@ -414,7 +414,7 @@ void grid::CHECKBCOND(){
         for (auto i=1; i != imax+1; ++i){
             // 3.26
             check_cond(U[i + (imax+2)*0] != U[i + (imax+2)*1], wS, "wS", "U", i);
-            check_cond(V[i + (imax+2)*0] = V[i + (imax+2)*1], wS, "wS", "U", i);
+            check_cond(V[i + (imax+2)*0] != V[i + (imax+2)*1], wS, "wS", "U", i);
         }
         break;
     case 4:
