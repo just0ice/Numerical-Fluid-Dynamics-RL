@@ -60,6 +60,7 @@ public:
     void COMP_DELT();
     // boundary.cc
     void SETBCOND();
+    void CHECKBCOND();
     void SETSPECBCOND();
     //uvp.cc
     void COMP_FG();
