@@ -91,6 +91,12 @@ void grid::COMP_FG(){
         G[id(i,0)] = V[id(i,0)];
         G[id(i,jmax)] = U[id(i,jmax)];
     }
+}
 
-
+void grid::COMP_RHS(){
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            RHS[id(i,j)] = 1/delt * ( (F[id(i,j)] - F[id(i-1,j)])/delx + (G[id(i,j)] - G[id(i,j-1)])/dely  );
+        }
+    }
 }

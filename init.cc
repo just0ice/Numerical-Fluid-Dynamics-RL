@@ -81,6 +81,8 @@ void grid::INIT_UVP(){
 
     F = vector<double>((imax + 2)*(jmax + 2),0); 
     G = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    RHS = vector<double>((imax + 2)*(jmax + 2),0); 
 }   
 
 void grid::COMP_DELT(){
