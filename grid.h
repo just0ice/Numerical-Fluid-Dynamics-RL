@@ -93,4 +93,7 @@ public:
 
     // more additional member functions
     void COMP_SPATIAL_DERIVATIVES(); // according to 3.19
+
+    // Algorithms
+    void BASE();
 };
