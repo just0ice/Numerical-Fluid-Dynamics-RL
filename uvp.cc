@@ -101,9 +101,28 @@ void grid::COMP_FG(){
 }
 
 void grid::COMP_RHS(){
+    // of eq 3.38
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
             RHS[id(i,j)] = 1/delt * ( (F[id(i,j)] - F[id(i-1,j)])/delx + (G[id(i,j)] - G[id(i,j-1)])/dely  );
         }
     }
+}
+
+int grid::POISSON(){
+    // res is the L2 norm of the residual, see (3.46) and (3.45)
+    // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
+    // (3.45)
+    res = 0;
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            res +=  pow( (P[id(i+1,j)] - 2*P[id(i,j)] - P[id(i-1,j)] )/pow(delx, 2) 
+            + (P[id(i,j+1)] - 2*P[id(i,j)] - P[id(i,j-1)] )/pow(delx, 2) - RHS[id(i,j)], 2);
+        }
+    }
+
+    res = pow( 1/imax * 1/jmax * res, 1/2);
+
+    cout << "res = " << res << endl;
 }

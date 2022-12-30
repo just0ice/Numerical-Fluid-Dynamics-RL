@@ -6,8 +6,7 @@ void grid::BASE(){
     unsigned n = 1;
     unsigned it = 0;
 
-    while (t < t_end)
-    {
+    while (t < t_end){
         COMP_DELT();
         SETBCOND();
         COMP_FG();
@@ -17,5 +16,8 @@ void grid::BASE(){
         t += delt;
         n += 1;
     }
+
+    OUTPUTVEC();
+
 
 }
