@@ -1,6 +1,11 @@
 // COMP_FG, CMP_RHS, POISSON, and ADAP_UV
 #include "grid.h"
 
+void grid::CHECK_HIRT(){
+    // Checking the Hirt condition 3.20 for gamma
+    
+}
+
 void grid::COMP_SPATIAL_DERIVATIVES(){
     // Computes the spatial derivatives according to 3.19
     

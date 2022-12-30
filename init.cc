@@ -85,25 +85,32 @@ void grid::INIT_UVP(){
     RHS = vector<double>((imax + 2)*(jmax + 2),0); 
 }   
 
+double abs_max(vector<double> X){
+    double max = 0;
+    for (auto i = X.cbegin(); i != X.cend(); ++i){
+        if (abs(*i) > max) max = abs(*i); 
+    }
+
+    return max;
+}
+
 void grid::COMP_DELT(){
     // according to 3.50
-    auto Umax_ptr = max_element(U.cbegin(), U.cend());
-    auto Vmax_ptr = max_element(V.cbegin(), V.cend());
-    double Umax = *Umax_ptr;
-    double Vmax = *Vmax_ptr;
+    double Umax = abs_max(U);
+    double Vmax = abs_max(V);
 
     cout << "Umax = " << Umax << ", Vmax = " << Vmax << endl;
     if (Umax == 0){
         if (Vmax == 0)
             delt = tau * Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) );
         else
-            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), dely/abs(Vmax) );
+            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), dely/Vmax );
     } 
     else {
         if (Vmax == 0)
-            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/abs(Umax) );
+            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/Umax );
         else
-            delt = tau * min( {Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/abs(Umax) , dely/abs(Vmax)});
+            delt = tau * min( {Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/Umax , dely/Vmax});
     }
 
     //delt = min(delx, dely);

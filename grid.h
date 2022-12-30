@@ -43,6 +43,10 @@ public:
     unsigned wW, wE, wN, wS;
     char problem;
 
+    // Auxiliary variables
+    double Umax; // calculated in COMP_DELT. Also needed for CHECK_HIRT
+    double Vmax;
+
     // input file
     string inputfile = "settings.in";
 
@@ -92,7 +96,8 @@ public:
     unsigned id(unsigned i, unsigned j);
 
     // more additional member functions
-    void COMP_SPATIAL_DERIVATIVES(); // according to 3.19
+    void COMP_SPATIAL_DERIVATIVES(); // in uvp.cc . according to 3.19
+    void CHECK_HIRT(); // in uvp.cc . according to 3.20
 
     // Algorithms
     void BASE();
