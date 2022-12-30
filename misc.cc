@@ -49,6 +49,11 @@ void grid::PRINT_UVP(){
     cout << "dp_dy" << endl;
     PRINT_TO_TERMINAL(dp_dy,imax+1,jmax+1);
 
+    cout << "F" << endl;
+    PRINT_TO_TERMINAL(F,imax+1,jmax+1);
+    cout << "G" << endl;
+    PRINT_TO_TERMINAL(G,imax+1,jmax+1);
+
 
     cout << "done" << endl;
 }

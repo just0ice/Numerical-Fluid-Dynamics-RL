@@ -8,6 +8,7 @@ int main()
     grid1.SETBCOND();
     grid1.CHECKBCOND();
     grid1.COMP_SPATIAL_DERIVATIVES();
+    grid1.COMP_FG();
     grid1.PRINT_UVP();
     grid1.CLEAR_OUTPUT_FILES();
     grid1.OUTPUTVEC();

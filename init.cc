@@ -78,6 +78,9 @@ void grid::INIT_UVP(){
     d2v_dx2 = vector<double>((imax + 2)*(jmax + 2),0); 
     d2v_dy2 = vector<double>((imax + 2)*(jmax + 2),0); 
     dp_dy = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    F = vector<double>((imax + 2)*(jmax + 2),0); 
+    G = vector<double>((imax + 2)*(jmax + 2),0); 
 }   
 
 void grid::COMP_DELT(){
