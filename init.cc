@@ -116,4 +116,8 @@ void grid::COMP_DELT(){
     //delt = min(delx, dely);
     cout << "delt = " << delt << endl;
 
+    // check if delt negative
+    if (delt < 0)
+        cout << "WARNING! delt is smaller than 0!" << endl;
+
 }

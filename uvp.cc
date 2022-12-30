@@ -3,12 +3,14 @@
 
 void grid::CHECK_HIRT(){
     // Checking the Hirt condition 3.20 for gamma
-    
+    if (gamma < max(Umax * delt / delx, Vmax * delt / dely) )
+        cout << "WARNING! Gamma violates Hirt condition (3.20). Choose a larger gamma in settings.in." << endl;
 }
 
 void grid::COMP_SPATIAL_DERIVATIVES(){
     // Computes the spatial derivatives according to 3.19
     
+    CHECK_HIRT();
     // Test calculations
     U[id(2,2)] = 1;
     V[id(2,2)] = 2;
