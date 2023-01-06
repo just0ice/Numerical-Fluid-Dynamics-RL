@@ -10,8 +10,13 @@ void grid::ALG_BASE(string inputfile = "settings.in"){
     CLEAR_OUTPUT_FILES();
 
     while (t < t_end){
+        cout << "t = " << t << endl;
         COMP_DELT();
         SETBCOND();
+        // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
+        for (auto i = 1; i != imax + 1; ++i){
+            U[id(i,jmax+1)] = 2.0 - U[id(i,jmax)];
+        }
         COMP_FG();
         COMP_RHS();
         // SOR Cycle

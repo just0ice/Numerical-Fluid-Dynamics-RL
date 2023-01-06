@@ -111,11 +111,11 @@ void grid::COMP_RES(){
 
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
-            res +=  pow( (P[id(i+1,j)] - 2*P[id(i,j)] - P[id(i-1,j)] )/pow(delx, 2) 
-            + (P[id(i,j+1)] - 2*P[id(i,j)] - P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+            res += pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
+            + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
         }
     }
-    res = sqrt( 1/imax * 1/jmax * res);
+    res = sqrt(res * 1/imax * 1/jmax);
 
 }
 
@@ -123,10 +123,24 @@ int grid::POISSON(){
     // res is the L2 norm of the residual, see (3.46) and (3.45)
     // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
 
+    // Test data
+    for (auto j=0; j != jmax+2; ++j){
+        for (auto i=0; i != imax+2; ++i){
+            P[id(i,j)] = 0;
+        }
+    }
+
+    P[id(2,2)] = 1;
+    //omg = 1; // gauss seidel
+    //
+    
     COMP_RES();
     cout << "Initial res = " << res << endl;
 
     it = 0;
+
+    cout << "P" << endl;
+    PRINT_TO_TERMINAL(P,imax+1,jmax+1);
     while (it < itermax && res > eps)
     {
         // (3.48)
@@ -140,14 +154,18 @@ int grid::POISSON(){
         }
 
         //3.44, omega = omg from input file
+
+        
         for (auto j=1; j != jmax+1; ++j){
             for (auto i=1; i != imax+1; ++i){
-                P[id(i,j)] = (1 - omg) * P[id(i,j)] + omg/( 1/pow(delx,2) + 1/pow(dely,2) ) * ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) );
+                P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 1/pow(delx,2) + 1/pow(dely,2) );
             }
         }
 
         COMP_RES();
         ++it;
+        cout << "P(2,2) = " << P[id(2,2)] <<  endl;
+        cout << "res = " << res << " at iteration " << it <<  endl;
     }
     cout << "Final res = " << res << " at iteration " << it <<  endl;
 
@@ -157,5 +175,17 @@ int grid::POISSON(){
 }
 
 void grid::ADAP_UV(){
+    // (3.34)
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax; ++i){
+            U[id(i,j)] = F[id(i,j)] - delt/delx * ( P[id(i+1,j)] - P[id(i,j)] );
+        }
+    }
 
+    // (3.35)
+    for (auto j=1; j != jmax; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            V[id(i,j)] = G[id(i,j)] - delt/delx * ( P[id(i,j+1)] - P[id(i,j)] );
+        }
+    }
 }

@@ -1,6 +1,6 @@
 #include "grid.h"
 
-void PRINT_TO_TERMINAL(vector<double> X, unsigned iend, unsigned jend){
+void grid::PRINT_TO_TERMINAL(vector<double> X, unsigned iend, unsigned jend){
     for (auto j=jend+1; j-- > 0; ){
         for (auto i=0; i != iend + 1; ++i){
             cout << X[i + (iend+1)*j] << " ";
