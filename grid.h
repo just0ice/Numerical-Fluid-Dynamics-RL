@@ -47,9 +47,6 @@ public:
     double Umax; // calculated in COMP_DELT. Also needed for CHECK_HIRT
     double Vmax;
 
-    // input file
-    string inputfile = "settings.in";
-
     // Data arrays
     vector<double> U, V, P; // not sure wether its better to use array here for performance. might be a problem because of fixed length so need to be carefull when to initialize. lets keep vector for now
     vector<double> Ucc, Vcc, Pcc; // cell centered averaged and taken only physical cells (not on boundary). P was already cell centered
@@ -73,7 +70,7 @@ public:
     // 3.34 The Program
     // declar member functions according to p.43
     // init.cc
-    int READ_PARAMETER();
+    int READ_PARAMETER(string inputfile);
     void INIT_UVP(); // and spatial derivatives
     void COMP_DELT();
     // boundary.cc
@@ -98,7 +95,10 @@ public:
     // more additional member functions
     void COMP_SPATIAL_DERIVATIVES(); // in uvp.cc . according to 3.19
     void CHECK_HIRT(); // in uvp.cc . according to 3.20
+    void COMP_RES(); // in uvp.cc according to (3.45) and (3.46)
 
     // Algorithms
-    void BASE();
+    void ALG_BASE(string inputfile);
+    void ALG_ALL(string inputfile);
+    void ALG_TEST_POISSON(string inputfile);
 };

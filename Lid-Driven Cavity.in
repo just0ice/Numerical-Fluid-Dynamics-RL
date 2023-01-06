@@ -1,0 +1,43 @@
+# input data
+# xlength, ylength, imax, jmax, t_end, tau, itermax, eps, omg, gamma, Re, GX, GY, UI, VI, PI, wW, wE, wN, wS 
+#
+# xlength
+1.0
+# ylength
+1.0
+# imax
+128
+# jmax
+128
+# t_end
+2.0
+# tau
+0.5
+# itermanx
+100
+# eps
+0.001
+# omg
+1.7
+# gamma
+0.9
+# Re
+1000
+# GX
+0.0
+# GY
+0.0
+# UI
+0.0
+# VI
+0.0
+# PI
+0.0
+# wW
+2
+# wE
+2
+# wN
+2
+# wS
+2

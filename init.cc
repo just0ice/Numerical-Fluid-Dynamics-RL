@@ -3,10 +3,11 @@
 
 
 
-int grid::READ_PARAMETER(){
+int grid::READ_PARAMETER(string inputfile = "settings.in"){
     // read data from settings.in . every value is expected to be in one row in the following order:
     // xlength, ylength, imax, jmax, t_end, tau, itermax, eps, omg, gamma, Re, GX, GY, UI, VI, PI, wW, wE, wN, wS 
     // as in 3.3.2 p. 42
+
     string line;
     std::ifstream file;
     vector<string> data;
@@ -99,7 +100,7 @@ void grid::COMP_DELT(){
     double Umax = abs_max(U);
     double Vmax = abs_max(V);
 
-    cout << "Umax = " << Umax << ", Vmax = " << Vmax << endl;
+    //cout << "Umax = " << Umax << ", Vmax = " << Vmax << endl;
     if (Umax == 0){
         if (Vmax == 0)
             delt = tau * Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) );
@@ -114,7 +115,7 @@ void grid::COMP_DELT(){
     }
 
     //delt = min(delx, dely);
-    cout << "delt = " << delt << endl;
+    //cout << "delt = " << delt << endl;
 
     // check if delt negative
     if (delt < 0)

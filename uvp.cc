@@ -11,10 +11,6 @@ void grid::COMP_SPATIAL_DERIVATIVES(){
     // Computes the spatial derivatives according to 3.19
     
     CHECK_HIRT();
-    // Test calculations
-    U[id(2,2)] = 1;
-    V[id(2,2)] = 2;
-    P[id(2,2)] = 3;
 
     // 3.19a
     for (auto j=1; j != jmax+1; ++j){
@@ -58,7 +54,7 @@ void grid::COMP_SPATIAL_DERIVATIVES(){
                 ( P[id(i,j+1)] - P[id(i,j)] ) / dely;
         }
     }
-    cout << "Spatial derivatives computed." << endl;
+    //out << "Spatial derivatives computed." << endl;
 
 
 
@@ -109,20 +105,57 @@ void grid::COMP_RHS(){
     }
 }
 
-int grid::POISSON(){
-    // res is the L2 norm of the residual, see (3.46) and (3.45)
-    // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
-    // (3.45)
+void grid::COMP_RES(){
+    // (3.45) , (3.46)
     res = 0;
 
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
             res +=  pow( (P[id(i+1,j)] - 2*P[id(i,j)] - P[id(i-1,j)] )/pow(delx, 2) 
-            + (P[id(i,j+1)] - 2*P[id(i,j)] - P[id(i,j-1)] )/pow(delx, 2) - RHS[id(i,j)], 2);
+            + (P[id(i,j+1)] - 2*P[id(i,j)] - P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
         }
     }
+    res = sqrt( 1/imax * 1/jmax * res);
 
-    res = pow( 1/imax * 1/jmax * res, 1/2);
+}
 
-    cout << "res = " << res << endl;
+int grid::POISSON(){
+    // res is the L2 norm of the residual, see (3.46) and (3.45)
+    // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
+
+    COMP_RES();
+    cout << "Initial res = " << res << endl;
+
+    it = 0;
+    while (it < itermax && res > eps)
+    {
+        // (3.48)
+        for (auto j=1; j != jmax+1; ++j){
+            P[id(0,j)] = P[id(1,j)];
+            P[id(imax+1,j)] = P[id(imax,j)];
+        }
+        for (auto i=1; i != imax+1; ++i){
+            P[id(i,0)] = P[id(i,1)];
+            P[id(i,jmax+1)] = P[id(i,jmax)];
+        }
+
+        //3.44, omega = omg from input file
+        for (auto j=1; j != jmax+1; ++j){
+            for (auto i=1; i != imax+1; ++i){
+                P[id(i,j)] = (1 - omg) * P[id(i,j)] + omg/( 1/pow(delx,2) + 1/pow(dely,2) ) * ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) );
+            }
+        }
+
+        COMP_RES();
+        ++it;
+    }
+    cout << "Final res = " << res << " at iteration " << it <<  endl;
+
+    
+
+    return 0;
+}
+
+void grid::ADAP_UV(){
+
 }

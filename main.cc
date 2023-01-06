@@ -4,16 +4,11 @@
 int main()
 {
     grid grid1;
-    //grid1.INIT_TEST_DATA();
-    //grid1.BASE();
-    grid1.COMP_DELT();
-    grid1.SETBCOND();
-    grid1.CHECKBCOND();
-    grid1.COMP_SPATIAL_DERIVATIVES();
-    grid1.COMP_FG();
-    grid1.COMP_RHS();
-    grid1.PRINT_UVP();
-    grid1.CLEAR_OUTPUT_FILES();
-    grid1.OUTPUTVEC();
+    
+    //grid1.ALG_BASE("Lid-Driven Cavity.in");
+    //grid1.ALG_ALL("settings.in");
+
+    grid1.ALG_TEST_POISSON("settings.in");
+    
     return 0;
 }
