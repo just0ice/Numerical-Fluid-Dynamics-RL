@@ -135,12 +135,9 @@ int grid::POISSON(){
     //
     
     COMP_RES();
-    cout << "Initial res = " << res << endl;
+    //cout << "Initial res = " << res << endl;
 
     it = 0;
-
-    cout << "P" << endl;
-    PRINT_TO_TERMINAL(P,imax+1,jmax+1);
     while (it < itermax && res > eps)
     {
         // (3.48)
@@ -158,16 +155,15 @@ int grid::POISSON(){
         
         for (auto j=1; j != jmax+1; ++j){
             for (auto i=1; i != imax+1; ++i){
-                P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 1/pow(delx,2) + 1/pow(dely,2) );
+                
+                P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 2/pow(delx,2) + 2/pow(dely,2) );
             }
         }
 
         COMP_RES();
         ++it;
-        cout << "P(2,2) = " << P[id(2,2)] <<  endl;
-        cout << "res = " << res << " at iteration " << it <<  endl;
     }
-    cout << "Final res = " << res << " at iteration " << it <<  endl;
+    //cout << "Final res = " << res << " at iteration " << it <<  endl;
 
     
 
