@@ -15,3 +15,6 @@ Pcc.tsv
 grid.h.gch
 plot.pdf
 settings.in
+res_RHS=0_TestData.pdf
+res.pdf
+res.tsv

@@ -47,6 +47,7 @@ public:
     // Auxiliary variables
     double Umax; // calculated in COMP_DELT. Also needed for CHECK_HIRT
     double Vmax;
+    bool dev = false; // variable to enable extended output. dev variables should have "temp" in their name. makeshift solution. 
 
     // Data arrays
     vector<double> U, V, P; // not sure wether its better to use array here for performance. might be a problem because of fixed length so need to be carefull when to initialize. lets keep vector for now
@@ -81,7 +82,7 @@ public:
     //uvp.cc
     void COMP_FG();
     void COMP_RHS();
-    int POISSON();
+    int POISSON(); // dev = true means extended output
     void ADAP_UV();
 
     // additional member functions. can be found in misc.cc
@@ -100,7 +101,8 @@ public:
     void COMP_RES(); // in uvp.cc according to (3.45) and (3.46)
 
     // Algorithms
-    void ALG_BASE(string inputfile);
-    void ALG_ALL(string inputfile);
-    void ALG_TEST_POISSON(string inputfile);
+    void ALG_BASE();
+    void ALG_ALL();
+    void ALG_TEST_POISSON();
+    void ALG_TEST_POISSON_2();
 };

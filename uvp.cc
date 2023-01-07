@@ -123,19 +123,12 @@ int grid::POISSON(){
     // res is the L2 norm of the residual, see (3.46) and (3.45)
     // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
 
-    // Test data
-    for (auto j=0; j != jmax+2; ++j){
-        for (auto i=0; i != imax+2; ++i){
-            P[id(i,j)] = 0;
-        }
-    }
-
-    P[id(2,2)] = 1;
-    //omg = 1; // gauss seidel
-    //
-    
     COMP_RES();
-    //cout << "Initial res = " << res << endl;
+    vector<double> temp;
+    if (dev){
+        temp.push_back(res);
+    }
+    cout << "Initial res = " << res << endl;
 
     it = 0;
     while (it < itermax && res > eps)
@@ -155,16 +148,20 @@ int grid::POISSON(){
         
         for (auto j=1; j != jmax+1; ++j){
             for (auto i=1; i != imax+1; ++i){
-                
+                // maybe check the epsilon signs here
                 P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 2/pow(delx,2) + 2/pow(dely,2) );
             }
         }
 
         COMP_RES();
+        if (dev) temp.push_back(res);
         ++it;
     }
-    //cout << "Final res = " << res << " at iteration " << it <<  endl;
+    cout << "Final res = " << res << " at iteration " << it <<  endl;
 
+    if (dev){
+        ADD_TO_FILE("res.tsv", temp);
+    }
     
 
     return 0;
