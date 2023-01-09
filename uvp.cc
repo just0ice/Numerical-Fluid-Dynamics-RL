@@ -105,9 +105,31 @@ void grid::COMP_RHS(){
     }
 }
 
+// epsilon from (3.43).
+bool grid::eps_W(unsigned i){
+    if (i == 1) return 0;
+    else return 1;
+} 
+
+bool grid::eps_E(unsigned i){
+    if (i == imax) return 0;
+    else return 1;
+} 
+
+bool grid::eps_S(unsigned j){
+    if (j == 1) return 0;
+    else return 1;
+} 
+
+bool grid::eps_N(unsigned j){
+    if (j == jmax) return 0;
+    else return 1;
+} 
+
 void grid::COMP_RES(){
     // (3.45) , (3.46)
     res = 0;
+    // fast version of the calcuulation without epsilons. might yield false results
 
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
@@ -116,7 +138,33 @@ void grid::COMP_RES(){
         }
     }
     res = sqrt(res * 1/imax * 1/jmax);
+    
 
+    vector<double> res_vec;
+    res_vec = vector<double>((imax + 2)*(jmax + 2),0); 
+    double res2 = 0;
+
+    // (3.45)
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            res_vec[id(i,j)] = ( eps_E(i) * ( P[id(i+1,j)] - P[id(i,j)] ) - eps_W(i) * ( P[id(i,j)] - P[id(i-1,j)] ) )/pow(delx, 2) 
+            + ( eps_N(j) * ( P[id(i,j+1)] - P[id(i,j)] ) - eps_S(j) * ( P[id(i,j)] - P[id(i,j-1)] ) )/pow(dely, 2)  - RHS[id(i,j)];
+        }
+    }
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            res2 += pow(res_vec[id(i,j)], 2);
+        }
+    }
+
+    res2 = sqrt( res2/(imax * jmax) );
+
+    if (res2 != res){
+        //cout << "WARNING! Residuals with and without epsilon do not match! res = " << res << ", res2 = " << res2 << endl;
+    }
+
+    //res = res2;
 }
 
 int grid::POISSON(){
@@ -131,8 +179,11 @@ int grid::POISSON(){
     cout << "Initial res = " << res << endl;
 
     it = 0;
+
+    vector<double> P2 = P;
     while (it < itermax && res > eps)
     {
+
         // (3.48)
         for (auto j=1; j != jmax+1; ++j){
             P[id(0,j)] = P[id(1,j)];
@@ -142,16 +193,28 @@ int grid::POISSON(){
             P[id(i,0)] = P[id(i,1)];
             P[id(i,jmax+1)] = P[id(i,jmax)];
         }
-
         //3.44, omega = omg from input file
-
         
         for (auto j=1; j != jmax+1; ++j){
             for (auto i=1; i != imax+1; ++i){
                 // maybe check the epsilon signs here
                 P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 2/pow(delx,2) + 2/pow(dely,2) );
+                P2[id(i,j)] =  P2[id(i,j)] * (1 - omg) + ( eps_E(i)*(P2[id(i+1,j)] + eps_W(i)*P2[id(i-1,j)])/pow(delx,2) + (eps_N(j)*P2[id(i,j+1)] + eps_S(j)*P2[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( ( eps_E(i) + eps_W(i) )/pow(delx,2) + ( eps_N(j) + eps_N(j) )/pow(dely,2) );
+
             }
         }
+
+        /*
+            cout << "P" << endl;
+            PRINT_TO_TERMINAL(P,imax+1,jmax+1);
+
+            cout << "P2" << endl;
+            PRINT_TO_TERMINAL(P2,imax+1,jmax+1);
+        }
+        */
+        //P = P2;
+
+
 
         COMP_RES();
         if (dev) temp.push_back(res);
@@ -161,6 +224,7 @@ int grid::POISSON(){
 
     if (dev){
         ADD_TO_FILE("res.tsv", temp);
+        cout << "Res written to file res.tsv" << endl;
     }
     
 

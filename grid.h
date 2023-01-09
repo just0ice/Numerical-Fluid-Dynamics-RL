@@ -99,6 +99,10 @@ public:
     void COMP_SPATIAL_DERIVATIVES(); // in uvp.cc . according to 3.19
     void CHECK_HIRT(); // in uvp.cc . according to 3.20
     void COMP_RES(); // in uvp.cc according to (3.45) and (3.46)
+    bool eps_W(unsigned i); // in uvp.cc according to (3.43), below 
+    bool eps_E(unsigned i); 
+    bool eps_S(unsigned j);
+    bool eps_N(unsigned j);
 
     // Algorithms
     void ALG_BASE();

@@ -56,9 +56,13 @@ void grid::ALG_TEST_POISSON(){
     double t = 0;
     unsigned n = 1;
     CLEAR_OUTPUT_FILES();
-    INIT_TEST_DATA();
+    for (auto i=0; i != imax+2; ++i){
+        for (auto j=0; j != jmax+2; ++j)
+            P[id(i,j)] = pow((i-imax-1)*i, 2) + pow((j-jmax-1)*j, 2);
+    }
+    //INIT_TEST_DATA();
 
-    SETBCOND();
+    //SETBCOND();
     // set RHS to 0 (for which the solution is known)
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
@@ -78,11 +82,8 @@ void grid::ALG_TEST_POISSON_2(){
     INIT_UVP();
 
     // Algorihm 1. Base version, p. 40
-    double t = 0;
-    unsigned n = 1;
     CLEAR_OUTPUT_FILES();
 
-    cout << "t = " << t << endl;
     COMP_DELT();
     SETBCOND();
     // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
@@ -97,8 +98,6 @@ void grid::ALG_TEST_POISSON_2(){
     POISSON();
 
     ADAP_UV();
-    t += delt;
-    n += 1;
 
     OUTPUTVEC();
 }
