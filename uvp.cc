@@ -92,7 +92,7 @@ void grid::COMP_FG(){
         P[id(i,0)] = P[id(i,1)];
         P[id(i,jmax+1)] = P[id(i,jmax)];
         G[id(i,0)] = V[id(i,0)];
-        G[id(i,jmax)] = U[id(i,jmax)];
+        G[id(i,jmax)] = V[id(i,jmax)];
     }
 }
 
@@ -165,11 +165,9 @@ void grid::COMP_RES_2(){
 int grid::POISSON(){
     // res is the L2 norm of the residual, see (3.46) and (3.45)
     // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
-    vector<double> res_list; // for file output
 
     COMP_RES();
-    res_list.push_back(res);
-    cout << "Initial res = " << res << endl;
+    //cout << "Initial res = " << res << endl;
 
     it = 0;
 
@@ -195,14 +193,9 @@ int grid::POISSON(){
         }
 
         COMP_RES();
-        res_list.push_back(res);
         ++it;
     }
-    cout << "Final res = " << res << " at iteration " << it <<  endl;
-
-    ADD_TO_FILE("res.tsv", res_list);
-    cout << "Res written to file res.tsv" << endl;
-    
+    //cout << "Final res = " << res << " at iteration " << it <<  endl;
 
     return 0;
 }
@@ -256,7 +249,7 @@ void grid::ADAP_UV(){
     // (3.35)
     for (auto j=1; j != jmax; ++j){
         for (auto i=1; i != imax+1; ++i){
-            V[id(i,j)] = G[id(i,j)] - delt/delx * ( P[id(i,j+1)] - P[id(i,j)] );
+            V[id(i,j)] = G[id(i,j)] - delt/dely * ( P[id(i,j+1)] - P[id(i,j)] );
         }
     }
 }

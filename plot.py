@@ -15,6 +15,7 @@ def readfile(fname):
 
 # read the grid data from file into a 1d array. first index time step. second index grid idex
 dim,U_1d = readfile("Ucc.tsv")
+print(len(U_1d))
 dim,V_1d = readfile("Vcc.tsv")
 dim,P_1d = readfile("Pcc.tsv")
 
@@ -24,8 +25,8 @@ xlength = float(dim[2])
 ylength = float(dim[3])
 
 # set up the grid and convert 2d arrays to 1d array for time step t_i
-print("t_i = "+str(len(U_1d)-1))
 t_i = len(U_1d)-1
+print("t_i = "+str(t_i))
 
 # problem: he doesnt know how to interpret u date. make U to mesh
 U = np.zeros((jmax,imax))
@@ -63,7 +64,12 @@ else:
     lw = 0
 
 extent = (0, xlength, 0, ylength)
-plt.streamplot(X, Y, U, V, density=0.6, color='k', linewidth=lw)
+#plt.streamplot(X, Y, U, V, density=0.6, color='k', linewidth=lw)
+plt.streamplot(X, Y, U, V, density=[0.5, 1])
+
+#  Varying density along a streamline
+
+
 plt.imshow(P, extent = extent, origin="lower", cmap="Blues")
 #ax2.set_title('Varying Line Width')
 

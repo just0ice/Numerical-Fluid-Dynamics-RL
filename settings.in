@@ -1,5 +1,6 @@
 # input data
 # xlength, ylength, imax, jmax, t_end, tau, itermax, eps, omg, gamma, Re, GX, GY, UI, VI, PI, wW, wE, wN, wS 
+# wW, wE, wN, wS: 1 free-slip, 2 no-slip, 3 outflow, 4 periodic. see p. 41, to be added: Inflow condition
 #
 # xlength
 1.0

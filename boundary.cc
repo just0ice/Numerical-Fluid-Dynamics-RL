@@ -4,6 +4,7 @@
 void grid::SETBCOND(){
     // set boundary conditions according to wW, wE, wN and wS
     // 1 free-slip, 2 no-slip, 3 outflow, 4 periodic. see p. 41, to be added: Inflow condition
+    // WARNING! Numbers switched compared to pp. 30. It's an inconsistency in the book :(
     // indexing: U[i + (imax+2)*j]
 
     // Big Problem: When setting boundary conditions sometimes values are used that should already have been asigned 
@@ -15,14 +16,14 @@ void grid::SETBCOND(){
 
     // first assignment /////////////////////////////////////////////////////////////////////////////////////////////////
     switch (wW){
-    case 1:
+    case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.21
             U[imax + (imax+2)*j] = 0;
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.24
@@ -51,14 +52,14 @@ void grid::SETBCOND(){
     }
 
     switch (wE){
-    case 1:
+    case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.21
             U[0 + (imax+2)*j] = 0;
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.24
@@ -87,7 +88,7 @@ void grid::SETBCOND(){
     }
 
     switch (wN){
-    case 1:
+    case 2:
         // No-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.21
@@ -96,7 +97,7 @@ void grid::SETBCOND(){
             U[i + (imax+2)*(jmax+1)] = - U[i + (imax+2)*jmax];
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.24
@@ -128,7 +129,7 @@ void grid::SETBCOND(){
     }
 
     switch (wS){
-    case 1:
+    case 2:
         // No-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.21
@@ -137,7 +138,7 @@ void grid::SETBCOND(){
             U[i + (imax+2)*0] = U[i + (imax+2)*1];
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.24
@@ -170,14 +171,14 @@ void grid::SETBCOND(){
 
     // second assignment /////////////////////////////////////////////////////////////////////////////////////////////////
     switch (wW){
-    case 1:
+    case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.23
             V[(imax+1) + (imax+2)*j] = - V[imax + (imax+2)*j];
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.25
@@ -206,14 +207,14 @@ void grid::SETBCOND(){
     }
 
     switch (wE){
-    case 1:
+    case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.23
             V[0 + (imax+2)*j] = - V[1 + (imax+2)*j];
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.25
@@ -249,10 +250,10 @@ void check_cond(bool no_good, unsigned cond_val, string wall, string comp, unsig
         switch (cond_val)
         {
         case 1:
-            cond = "No-slip";
+            cond = "Free-slip";
             break;
         case 2:
-            cond = "Free-slip";
+            cond = "No-slip";
             break;
         case 3:
             cond = "Outflow";
@@ -277,7 +278,7 @@ void grid::CHECKBCOND(){
     // indexing: U[i + (imax+2)*j]
 
     switch (wW){
-    case 1:
+    case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.21
@@ -288,7 +289,7 @@ void grid::CHECKBCOND(){
                 cout << "Warning! No-slip boundary condition for V 3.23 not fulfilled at wW j = " << j << endl;
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.24
@@ -314,7 +315,7 @@ void grid::CHECKBCOND(){
     }
 
     switch (wE){
-    case 1:
+    case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.21
@@ -324,7 +325,7 @@ void grid::CHECKBCOND(){
             check_cond(V[0 + (imax+2)*j] != - V[1 + (imax+2)*j], wN, "wE", "V", j);
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.24
@@ -350,7 +351,7 @@ void grid::CHECKBCOND(){
     }
 
     switch (wN){
-    case 1:
+    case 2:
         // No-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.21
@@ -359,7 +360,7 @@ void grid::CHECKBCOND(){
             check_cond(U[i + (imax+2)*(jmax+1)] != - U[i + (imax+2)*jmax], wN, "wN", "U", i);
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.24
@@ -391,7 +392,7 @@ void grid::CHECKBCOND(){
     }
 
     switch (wS){
-    case 1:
+    case 2:
         // No-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.21
@@ -400,7 +401,7 @@ void grid::CHECKBCOND(){
             check_cond(U[i + (imax+2)*0] != U[i + (imax+2)*1], wS, "wS", "U", i);
         }
         break;
-    case 2:
+    case 1:
         // Free-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.24
