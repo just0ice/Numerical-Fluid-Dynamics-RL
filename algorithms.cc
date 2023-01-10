@@ -51,18 +51,9 @@ void grid::ALG_ALL(){
 void grid::ALG_TEST_POISSON(){
     READ_PARAMETER("settings.in");
     INIT_UVP();
-
-    // Algorihm 1. Base version, p. 40
-    double t = 0;
-    unsigned n = 1;
     CLEAR_OUTPUT_FILES();
-    for (auto i=0; i != imax+2; ++i){
-        for (auto j=0; j != jmax+2; ++j)
-            P[id(i,j)] = pow((i-imax-1)*i, 2) + pow((j-jmax-1)*j, 2);
-    }
-    //INIT_TEST_DATA();
+    INIT_TEST_DATA();
 
-    //SETBCOND();
     // set RHS to 0 (for which the solution is known)
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
@@ -70,34 +61,36 @@ void grid::ALG_TEST_POISSON(){
         }
     }
     // SOR Cycle
-    dev = true;
     POISSON();
+    cout << "P" << endl;
+    PRINT_TO_TERMINAL(P,imax+1,jmax+1);
 
     OUTPUTVEC();
 
 }
 
 void grid::ALG_TEST_POISSON_2(){
-    READ_PARAMETER("Lid-Driven Cavity.in");
+    READ_PARAMETER("settings.in");
     INIT_UVP();
+    std::ofstream file;
 
-    // Algorihm 1. Base version, p. 40
-    CLEAR_OUTPUT_FILES();
-
-    COMP_DELT();
-    SETBCOND();
-    // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
-    for (auto i = 1; i != imax + 1; ++i){
-        U[id(i,jmax+1)] = 2.0 - U[id(i,jmax)];
+    for (auto fname : {"Ucc.tsv","Vcc.tsv","Pcc.tsv","res_2.tsv"}){
+        file.open(fname, std::ofstream::out | std::ofstream::trunc);
+        file.close();
     }
-    COMP_FG();
-    COMP_RHS();
+    INIT_TEST_DATA();
+
+    // set RHS to 0 (for which the solution is known)
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            RHS[id(i,j)] = 0;
+        }
+    }
     // SOR Cycle
-    dev = true;
-
-    POISSON();
-
-    ADAP_UV();
+    POISSON_2();
+    cout << "P2" << endl;
+    PRINT_TO_TERMINAL(P,imax+1,jmax+1);
 
     OUTPUTVEC();
+
 }

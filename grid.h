@@ -103,6 +103,8 @@ public:
     bool eps_E(unsigned i); 
     bool eps_S(unsigned j);
     bool eps_N(unsigned j);
+    void COMP_RES_2(); // same as COMP_RES() but more readable and with epsilons
+    int POISSON_2(); // same as POISSON() but with epsilons
 
     // Algorithms
     void ALG_BASE();

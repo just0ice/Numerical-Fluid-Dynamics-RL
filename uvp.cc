@@ -129,7 +129,6 @@ bool grid::eps_N(unsigned j){
 void grid::COMP_RES(){
     // (3.45) , (3.46)
     res = 0;
-    // fast version of the calcuulation without epsilons. might yield false results
 
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
@@ -138,11 +137,13 @@ void grid::COMP_RES(){
         }
     }
     res = sqrt(res * 1/imax * 1/jmax);
-    
+}
 
+void grid::COMP_RES_2(){
+    // (3.45) , (3.46)
+    res = 0;
     vector<double> res_vec;
     res_vec = vector<double>((imax + 2)*(jmax + 2),0); 
-    double res2 = 0;
 
     // (3.45)
     for (auto j=1; j != jmax+1; ++j){
@@ -154,33 +155,24 @@ void grid::COMP_RES(){
 
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
-            res2 += pow(res_vec[id(i,j)], 2);
+            res += pow(res_vec[id(i,j)], 2);
         }
     }
 
-    res2 = sqrt( res2/(imax * jmax) );
-
-    if (res2 != res){
-        //cout << "WARNING! Residuals with and without epsilon do not match! res = " << res << ", res2 = " << res2 << endl;
-    }
-
-    //res = res2;
+    res = sqrt( res/(imax * jmax) );
 }
 
 int grid::POISSON(){
     // res is the L2 norm of the residual, see (3.46) and (3.45)
     // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
+    vector<double> res_list; // for file output
 
     COMP_RES();
-    vector<double> temp;
-    if (dev){
-        temp.push_back(res);
-    }
+    res_list.push_back(res);
     cout << "Initial res = " << res << endl;
 
     it = 0;
 
-    vector<double> P2 = P;
     while (it < itermax && res > eps)
     {
 
@@ -193,43 +185,65 @@ int grid::POISSON(){
             P[id(i,0)] = P[id(i,1)];
             P[id(i,jmax+1)] = P[id(i,jmax)];
         }
+
         //3.44, omega = omg from input file
         
         for (auto j=1; j != jmax+1; ++j){
             for (auto i=1; i != imax+1; ++i){
-                // maybe check the epsilon signs here
                 P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 2/pow(delx,2) + 2/pow(dely,2) );
-                P2[id(i,j)] =  P2[id(i,j)] * (1 - omg) + ( eps_E(i)*(P2[id(i+1,j)] + eps_W(i)*P2[id(i-1,j)])/pow(delx,2) + (eps_N(j)*P2[id(i,j+1)] + eps_S(j)*P2[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( ( eps_E(i) + eps_W(i) )/pow(delx,2) + ( eps_N(j) + eps_N(j) )/pow(dely,2) );
-
             }
         }
 
-        /*
-            cout << "P" << endl;
-            PRINT_TO_TERMINAL(P,imax+1,jmax+1);
-
-            cout << "P2" << endl;
-            PRINT_TO_TERMINAL(P2,imax+1,jmax+1);
-        }
-        */
-        //P = P2;
-
-
-
         COMP_RES();
-        if (dev) temp.push_back(res);
+        res_list.push_back(res);
         ++it;
     }
     cout << "Final res = " << res << " at iteration " << it <<  endl;
 
-    if (dev){
-        ADD_TO_FILE("res.tsv", temp);
-        cout << "Res written to file res.tsv" << endl;
-    }
+    ADD_TO_FILE("res.tsv", res_list);
+    cout << "Res written to file res.tsv" << endl;
     
 
     return 0;
 }
+
+
+int grid::POISSON_2(){
+    // res is the L2 norm of the residual, see (3.46) and (3.45)
+    // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
+    vector<double> res_list; // for file output
+
+    COMP_RES_2();
+    res_list.push_back(res);
+    cout << "Initial res = " << res << endl;
+
+    it = 0;
+
+    while (it < itermax && res > eps)
+    {
+        //3.44, omega = omg from input file
+        
+        for (auto j=1; j != jmax+1; ++j){
+            for (auto i=1; i != imax+1; ++i){
+                P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( eps_E(i)*(P[id(i+1,j)] + eps_W(i)*P[id(i-1,j)])/pow(delx,2) + (eps_N(j)*P[id(i,j+1)] + eps_S(j)*P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( ( eps_E(i) + eps_W(i) )/pow(delx,2) + ( eps_S(j) + eps_N(j) )/pow(dely,2) );
+            }
+        }
+
+        COMP_RES_2();
+        res_list.push_back(res);
+        ++it;
+    }
+    cout << "Final res = " << res << " at iteration " << it <<  endl;
+
+    ADD_TO_FILE("res_2.tsv", res_list);
+    cout << "Res written to file res_2.tsv" << endl;
+    
+
+    return 0;
+}
+
+
+
 
 void grid::ADAP_UV(){
     // (3.34)

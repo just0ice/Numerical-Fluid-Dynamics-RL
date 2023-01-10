@@ -6,15 +6,15 @@
 # ylength
 1.0
 # imax
-128
+20
 # jmax
-128
+20
 # t_end
 2.0
 # tau
 0.5
 # itermanx
-100
+10000
 # eps
 0.001
 # omg
