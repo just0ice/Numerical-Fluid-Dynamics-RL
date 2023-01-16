@@ -69,6 +69,9 @@ public:
     vector<double> d2v_dy2;
     vector<double> dp_dy;
 
+    // obstacle FLAG array
+    vector<unsigned int> FLAG;
+
     // 3.34 The Program
     // declar member functions according to p.43
     // init.cc
@@ -108,7 +111,12 @@ public:
 
     // Algorithms
     void ALG_BASE();
-    void ALG_ALL();
-    void ALG_TEST_POISSON();
-    void ALG_TEST_POISSON_2();
+    void ALG_WORKING();
+
+    // Obstacles
+    void RECTANGLE(unsigned bcond, double x_lo, double y_lo, double hight, double length);
+    void PRINT_FLAG();
+    void FLAG_PP(); // post process of the flag array. gives each cell a value depending on its type (in or outside the obstacle), its neighbouring cell type, and the boundary condition 
+    double x(unsigned i); // need to convert to double to get correct results :(
+    double y(unsigned j);
 };

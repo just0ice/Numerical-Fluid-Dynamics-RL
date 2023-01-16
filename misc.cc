@@ -26,38 +26,6 @@ void grid::PRINT_UVP(){
     cout << "Pcc" << endl;
     PRINT_TO_TERMINAL(Pcc,imax-1,jmax-1);
 
-    // spatial derivates
-    cout << "du2_dx" << endl;
-    PRINT_TO_TERMINAL(du2_dx,imax+1,jmax+1);
-    cout << "duv_dy" << endl;
-    PRINT_TO_TERMINAL(duv_dy,imax+1,jmax+1);  
-    cout << "d2u_dx2" << endl;
-    PRINT_TO_TERMINAL(d2u_dx2,imax+1,jmax+1);
-    cout << "d2u_dy2" << endl;
-    PRINT_TO_TERMINAL(d2u_dy2,imax+1,jmax+1);
-    cout << "dp_dx" << endl;
-    PRINT_TO_TERMINAL(dp_dx,imax+1,jmax+1);
-
-    cout << "duv_dx" << endl;
-    PRINT_TO_TERMINAL(duv_dx,imax+1,jmax+1);
-    cout << "dv2_dy" << endl;
-    PRINT_TO_TERMINAL(dv2_dy,imax+1,jmax+1);
-    cout << "d2v_dx2" << endl;
-    PRINT_TO_TERMINAL(d2v_dx2,imax+1,jmax+1);
-    cout << "d2v_dy2" << endl;
-    PRINT_TO_TERMINAL(d2v_dy2,imax+1,jmax+1);
-    cout << "dp_dy" << endl;
-    PRINT_TO_TERMINAL(dp_dy,imax+1,jmax+1);
-
-    cout << "F" << endl;
-    PRINT_TO_TERMINAL(F,imax+1,jmax+1);
-    cout << "G" << endl;
-    PRINT_TO_TERMINAL(G,imax+1,jmax+1);
-
-    cout << "RHS" << endl;
-    PRINT_TO_TERMINAL(RHS,imax+1,jmax+1);
-
-
     cout << "done" << endl;
 }
 

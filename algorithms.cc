@@ -31,66 +31,20 @@ void grid::ALG_BASE(){
 
 }
 
-void grid::ALG_ALL(){
+void grid::ALG_WORKING(){
     READ_PARAMETER("settings.in");
     INIT_UVP();
-
     INIT_TEST_DATA();
     COMP_DELT();
     SETBCOND();
     CHECKBCOND();
-    COMP_SPATIAL_DERIVATIVES();
-    COMP_FG();
-    COMP_RHS();
-    POISSON();
-    PRINT_UVP();
+    
+    RECTANGLE(2,0,0,0.5,0.5);
+    cout << "FLAG" << endl;
+    PRINT_FLAG();
+    FLAG_PP();
+    cout << "FLAG PP" << endl;
+    PRINT_FLAG();
     CLEAR_OUTPUT_FILES();
     OUTPUTVEC();
-}
-
-void grid::ALG_TEST_POISSON(){
-    READ_PARAMETER("settings.in");
-    INIT_UVP();
-    CLEAR_OUTPUT_FILES();
-    INIT_TEST_DATA();
-
-    // set RHS to 0 (for which the solution is known)
-    for (auto j=1; j != jmax+1; ++j){
-        for (auto i=1; i != imax+1; ++i){
-            RHS[id(i,j)] = 0;
-        }
-    }
-    // SOR Cycle
-    POISSON();
-    cout << "P" << endl;
-    PRINT_TO_TERMINAL(P,imax+1,jmax+1);
-
-    OUTPUTVEC();
-
-}
-
-void grid::ALG_TEST_POISSON_2(){
-    READ_PARAMETER("settings.in");
-    INIT_UVP();
-    std::ofstream file;
-
-    for (auto fname : {"Ucc.tsv","Vcc.tsv","Pcc.tsv","res_2.tsv"}){
-        file.open(fname, std::ofstream::out | std::ofstream::trunc);
-        file.close();
-    }
-    INIT_TEST_DATA();
-
-    // set RHS to 0 (for which the solution is known)
-    for (auto j=1; j != jmax+1; ++j){
-        for (auto i=1; i != imax+1; ++i){
-            RHS[id(i,j)] = 0;
-        }
-    }
-    // SOR Cycle
-    POISSON_2();
-    cout << "P2" << endl;
-    PRINT_TO_TERMINAL(P,imax+1,jmax+1);
-
-    OUTPUTVEC();
-
 }

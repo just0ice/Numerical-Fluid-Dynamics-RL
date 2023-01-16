@@ -82,8 +82,9 @@ void grid::INIT_UVP(){
 
     F = vector<double>((imax + 2)*(jmax + 2),0); 
     G = vector<double>((imax + 2)*(jmax + 2),0); 
-
     RHS = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    FLAG = vector<unsigned int>((imax + 2)*(jmax + 2),0); 
 }   
 
 double abs_max(vector<double> X){
