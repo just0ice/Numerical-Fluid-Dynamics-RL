@@ -40,6 +40,7 @@ void grid::ALG_WORKING(){
     CHECKBCOND();
     
     RECTANGLE(2,0,0,0.5,0.5);
+    CIRCLE(1,0.75,0.75,0.25);
     cout << "FLAG" << endl;
     PRINT_FLAG();
     FLAG_PP();
