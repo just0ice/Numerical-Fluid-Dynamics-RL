@@ -71,13 +71,22 @@ void grid::OUTPUTVEC(){
     ADD_TO_FILE("Ucc.tsv", Ucc);
     ADD_TO_FILE("Vcc.tsv", Vcc);
     ADD_TO_FILE("Pcc.tsv", Pcc);
+
+    // remove the boundary edges of the domain from the flag array. Flag out is double to be able to use ADD_TO_FILE which expects a double vector
+    vector<double> FLAG_OUT;
+    for (auto j=1; j != jmax + 1; ++j){
+        for (auto i=1; i != imax + 1; ++i){
+            FLAG_OUT.push_back(FLAG[id(i,j)]);
+        }
+    }
+    ADD_TO_FILE("flag.tsv", FLAG_OUT);
 }
 
 
 void grid::CLEAR_OUTPUT_FILES(){
     std::ofstream file;
 
-    for (auto fname : {"Ucc.tsv","Vcc.tsv","Pcc.tsv","res.tsv"}){
+    for (auto fname : {"Ucc.tsv","Vcc.tsv","Pcc.tsv","res.tsv","flag.tsv"}){
         file.open(fname, std::ofstream::out | std::ofstream::trunc);
         file.close();
     }

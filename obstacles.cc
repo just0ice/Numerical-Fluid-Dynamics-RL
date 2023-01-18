@@ -19,18 +19,29 @@ double grid::y(unsigned j){
     return  ylength/jmax * (j - 0.5); // need 0.5 instead of 1/2 for correct result
 }
 
+void grid::DOMAIN_BOUNDARY(){
+    for (auto j=0; j != imax+2; j++){
+        FLAG[id(0,j)] = wE;
+        FLAG[id(imax+1,j)] = wW;
+    }
+    for (auto i=0; i != imax+2; i++){
+        FLAG[id(i,jmax+1)] = wN;
+        FLAG[id(i,0)] = wS;
+    }
+}
+
 void grid::RECTANGLE(unsigned bcond, double x_lo, double y_lo, double hight, double width){
-    // bcond for obstacle: 1 free-slip, 2 no-slip
+    // bcond for obstacle: 1 free-slip, 2 no-slip, 3 outflow
     // populate the FLAG array with a rectangle.
     for (auto j=1; j != jmax + 1; ++j){
         for (auto i=1; i != imax + 1; ++i){
-            if ( x(i) >= x_lo && x(i) <= x_lo + width && y(j) >= y_lo && y(j) <= y_lo + hight) FLAG[id(i,j)] = bcond;
+            if ( x(i) >= x_lo && x(i) <= x_lo + width && y(j) <= y_lo && y(j) >= y_lo - hight) FLAG[id(i,j)] = bcond;
         }
     }
 }
 
 void grid::CIRCLE(unsigned bcond, double x_center, double y_center, double radius){
-    // bcond for obstacle: 1 free-slip, 2 no-slip
+    // bcond for obstacle: 1 free-slip, 2 no-slip, 3 outflow
     // populate the FLAG array with a circle.
     for (auto j=1; j != jmax + 1; ++j){
         for (auto i=1; i != imax + 1; ++i){
@@ -44,15 +55,17 @@ void grid::FLAG_PP(){
     unsigned edge_bin;
     unsigned bcond;
 
-    for (auto j=1; j != jmax + 1; ++j){
-        for (auto i=1; i != imax + 1; ++i){
+    for (auto j=0; j != jmax + 2; ++j){
+        for (auto i=0; i != imax + 2; ++i){
             edge_bin = 0;
             // obstacle cell
             if (FLAG[id(i,j)]){
-                edge_bin += !(bool)FLAG[id(i-1,j)] * pow(2,3);
-                edge_bin += !(bool)FLAG[id(i+1,j)] * pow(2,2);
-                edge_bin += !(bool)FLAG[id(i,j+1)] * pow(2,1);
-                edge_bin += !(bool)FLAG[id(i,j-1)] * pow(2,0);
+
+                // if clauses to check for domain boundary 
+                if (i != 0) edge_bin += !(bool)FLAG[id(i-1,j)] * pow(2,3);
+                if (i != imax+1) edge_bin += !(bool)FLAG[id(i+1,j)] * pow(2,2);
+                if (j != jmax+1) edge_bin += !(bool)FLAG[id(i,j+1)] * pow(2,1);
+                if (j != 0) edge_bin += !(bool)FLAG[id(i,j-1)] * pow(2,0);
 
                 bcond = FLAG[id(i,j)];
                 // edge_bin: East 8, West 4, North 2, South 1, EN 10, ES 9, WN 6, WS 5 

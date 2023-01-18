@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from matplotlib import colors
 import csv
+from matplotlib.colors import Normalize
 
 def readfile(fname):
     data = []
@@ -18,6 +20,7 @@ dim,U_1d = readfile("Ucc.tsv")
 print(len(U_1d))
 dim,V_1d = readfile("Vcc.tsv")
 dim,P_1d = readfile("Pcc.tsv")
+dim,flag_1d = readfile("flag.tsv")
 
 imax = int(dim[0])
 jmax = int(dim[1])
@@ -32,12 +35,14 @@ print("t_i = "+str(t_i))
 U = np.zeros((jmax,imax))
 V = np.zeros((jmax,imax))
 P = np.zeros((jmax,imax))
+flag = np.zeros((jmax,imax))
 
 for j in range(0,jmax):
     for i in range(0,imax):
         U[j][i] = U_1d[t_i][i+jmax*j]
         V[j][i] = V_1d[t_i][i+jmax*j]
         P[j][i] = P_1d[t_i][i+jmax*j]
+        flag[j][i] = flag_1d[t_i][i+jmax*j]
     
 
 speed = np.sqrt(np.square(U) + np.square(V))
@@ -57,24 +62,33 @@ X, Y = np.meshgrid(dx/2 + np.arange(0,xlength,dx), dy/2 + np.arange(0,ylength,dy
 #print(U)
 #print("V")
 #print(V)
-fig = plt.figure(frameon=False)
+#fig = plt.figure(frameon=False)
 if speed.max() != 0:
     lw = 5*speed / speed.max()
 else: 
     lw = 0
 
 extent = (0, xlength, 0, ylength)
+mask = (flag != 0.).astype(float)
+U = np.ma.array(U, mask=mask)
+V = np.ma.array(V, mask=mask)
+P = np.ma.array(P, mask=mask)
 #plt.streamplot(X, Y, U, V, density=0.6, color='k', linewidth=lw)
 plt.streamplot(X, Y, U, V, density=[0.5, 1])
-
-#  Varying density along a streamline
-
+#plt.streamplot(X, Y, U, V, density=[0.5, 1], broken_streamlines=False)
 
 plt.imshow(P, extent = extent, origin="lower", cmap="Blues")
-#ax2.set_title('Varying Line Width')
-
-
-#plt.tight_layout()
 plt.colorbar(label=r"$P$")
+
+
+#
+# make a color map of fixed colors
+cmap = colors.ListedColormap(['dimgrey'])
+bounds=[0,1]
+norm = colors.BoundaryNorm(bounds, cmap.N)
+
+# Create a mask
+plt.imshow(mask, alpha=mask, extent=extent, origin="lower", cmap=cmap, norm=norm)
+
 plt.savefig("plot.pdf")
 plt.show()

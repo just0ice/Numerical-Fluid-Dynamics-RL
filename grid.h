@@ -114,6 +114,7 @@ public:
     void ALG_WORKING();
 
     // Obstacles
+    void DOMAIN_BOUNDARY();
     void RECTANGLE(unsigned bcond, double x_lo, double y_lo, double hight, double length);
     void CIRCLE(unsigned bcond, double x_center, double y_center, double radius);
     void PRINT_FLAG();
