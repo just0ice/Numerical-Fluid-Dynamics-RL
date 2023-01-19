@@ -1,6 +1,122 @@
 // SETBCOND and SETSPECBCOND
 #include "grid.h"
 
+
+void grid::SETBCOND2(){
+    // SETBCOND for general geometries via flag array
+    for (auto j = 0; j != jmax+2; ++j){
+        for (auto i = 0; i != imax+2; ++i){
+            switch (FLAG[id(i,j)])
+            {
+            // No-slip 2
+            // fluid cells to the 19 East, 21 West, 23 North, 25 South, 31 NE, 27 NW, 29 SW, 33 SE
+            case 21:
+                U[id(i,j)] = 0;
+                break;
+            case 23:
+                V[id(i,j)] = 0;
+                break;
+            case 19:
+                U[id(i-1,j)] = 0;
+                break;
+            case 25:
+                V[id(i,j-1)] = 0;
+                break;
+            case 31:
+                U[id(i,j)] = 0;
+                V[id(i,j)] = 0;
+                break;
+            case 27:
+                V[id(i,j)] = 0;
+                U[id(i-1,j)] = 0;
+                break;
+            case 29:
+                U[id(i-1,j)] = 0;
+                V[id(i,j-1)] = 0;
+                break;
+            case 33:
+                U[id(i,j)] = 0;
+                V[id(i,j-1)] = 0;
+                break;
+
+            // Free-slip 1
+            // fluid cells to the 5 East, 3 West, 7 North, 9 South, 15 NE, 11 NW, 13 SW, 17 SE
+            case 5:
+                U[id(i,j)] = 0;
+                break;
+            case 3:
+                U[id(i-1,j)] = 0;
+                break;
+            case 7:
+                V[id(i,j)] = 0;
+                break;
+            case 9:
+                V[id(i,j-1)] = 0;
+                break;
+            case 15:
+                V[id(i,j)] = 0;
+                U[id(i,j)] = 0;
+                break;
+            case 11:
+                V[id(i,j)] = 0;
+                U[id(i-1,j)] = 0;
+                break;
+            case 13:
+                U[id(i-1,j)] = 0;
+                V[id(i,j-1)] = 0;
+                break;
+            case 17:
+                V[id(i,j-1)] = 0;
+                U[id(i,j)] = 0;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+
+    // second loop where assignment is dependant on neighboring values
+    for (auto j = 0; j != jmax+2; ++j){
+        for (auto i = 0; i != imax+2; ++i){
+            switch (FLAG[id(i,j)])
+            {
+            // No-slip
+            case 21:
+                V[id(i,j)] = - V[id(i+1,j)];
+                break;
+            case 23:
+                U[id(i,j)] = - U[id(i,j+1)];
+                break;
+            case 19:
+                V[id(i,j)] = - V[id(i-1,j)];
+                break;
+            case 25:
+                U[id(i,j)] = - U[id(i,j-1)];
+                break;
+            // higher cases redundant -> corner cells are 45° angles!
+
+            // Free-slip 1
+            // fluid cells to the 5 East, 3 West, 7 North, 9 South, 15 NE, 11 NW, 13 SW, 17 SE
+            case 5:
+                V[id(i,j)] = V[id(i+1,j)];
+                break;
+            case 3:
+                V[id(i,j)] = V[id(i-1,j)];
+                break;
+            case 7:
+                U[id(i,j)] = U[id(i,j+1)];
+                break;
+            case 9:
+                U[id(i,j)] = U[id(i,j-1)];
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
+
 void grid::SETBCOND(){
     // set boundary conditions according to wW, wE, wN and wS
     // 1 free-slip, 2 no-slip, 3 outflow, 4 periodic. see p. 41, to be added: Inflow condition
@@ -135,7 +251,7 @@ void grid::SETBCOND(){
             // 3.21
             V[i + (imax+2)*0] = 0;
             // 3.23
-            U[i + (imax+2)*0] = U[i + (imax+2)*1];
+            U[i + (imax+2)*0] = - U[i + (imax+2)*1];
         }
         break;
     case 1:
@@ -398,7 +514,7 @@ void grid::CHECKBCOND(){
             // 3.21
             check_cond(V[i + (imax+2)*0] != 0, wS, "wS", "V", i);
             // 3.23
-            check_cond(U[i + (imax+2)*0] != U[i + (imax+2)*1], wS, "wS", "U", i);
+            check_cond(U[i + (imax+2)*0] != - U[i + (imax+2)*1], wS, "wS", "U", i);
         }
         break;
     case 1:
