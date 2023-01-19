@@ -38,13 +38,44 @@ void grid::ALG_WORKING(){
     COMP_DELT();
     
     DOMAIN_BOUNDARY();
-    RECTANGLE(2,0.25,0.75,0.5,0.5);
+    //RECTANGLE(2,0.25,0.75,0.5,0.5);
     //CIRCLE(1,0.75,0.75,0.25);
-    //cout << "FLAG PP" << endl;
-    //PRINT_FLAG();
+    FLAG_PP();
+    cout << "FLAG PP" << endl;
+    PRINT_FLAG();
 
     SETBCOND2();
     CHECKBCOND();
+    COMP_FG();
+    cout << "F old" << endl;
+    PRINT_TO_TERMINAL(F,imax+1,jmax+1);
+    cout << "G old" << endl;
+    PRINT_TO_TERMINAL(G,imax+1,jmax+1);
+
+    vector<double> Fold = F;
+    vector<double> Gold = G;
+    vector<double> Fdiff;
+    Fdiff = vector<double>((imax + 2)*(jmax + 2),0); 
+    vector<double> Gdiff;
+    Gdiff = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    INIT_TEST_DATA();
+    SETBCOND2();
+    CHECKBCOND();
+    COMP_FG2();
+
+    for (auto j = 0; j != jmax+2; ++j){
+        for (auto i = 0; i != imax+2; ++i){
+            Fdiff[id(i,j)] = F[id(i,j)] - Fold[id(i,j)];
+            Gdiff[id(i,j)] = G[id(i,j)] - Gold[id(i,j)];
+        }
+    }
+
+    cout << "F diff" << endl;
+    PRINT_TO_TERMINAL(Fdiff,imax+1,jmax+1);
+    cout << "G diff" << endl;
+    PRINT_TO_TERMINAL(Gdiff,imax+1,jmax+1);
+    
 
     CLEAR_OUTPUT_FILES();
     OUTPUTVEC();

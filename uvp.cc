@@ -82,17 +82,76 @@ void grid::COMP_FG(){
 
     // 3.41, 3.42
     for (auto j=1; j != jmax+1; ++j){
-        P[id(0,j)] = P[id(1,j)];
-        P[id(imax+1,j)] = P[id(imax,j)];
+        // shouldnt be needed here because same assignment is already in POISSON
+        //P[id(0,j)] = P[id(1,j)];
+        //P[id(imax+1,j)] = P[id(imax,j)];
         F[id(0,j)] = U[id(0,j)];
         F[id(imax,j)] = U[id(imax,j)];
     }
 
-    for (auto i=1; i != jmax+1; ++i){
-        P[id(i,0)] = P[id(i,1)];
-        P[id(i,jmax+1)] = P[id(i,jmax)];
+    for (auto i=1; i != imax+1; ++i){
+        //P[id(i,0)] = P[id(i,1)];
+        //P[id(i,jmax+1)] = P[id(i,jmax)];
         G[id(i,0)] = V[id(i,0)];
         G[id(i,jmax)] = V[id(i,jmax)];
+    }
+}
+
+void grid::COMP_FG2(){
+    COMP_SPATIAL_DERIVATIVES();
+    // Formulas 3.36, 3.37. At boundary 3.42
+
+    //  3.36
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax; ++i){
+            F[id(i,j)] = U[id(i,j)]
+                + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
+        }
+    }
+
+    // 3.37
+    for (auto j=1; j != jmax; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            G[id(i,j)] = V[id(i,j)]
+                + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
+        }
+    }
+
+    for (auto j=0; j != jmax+2; ++j){
+        for (auto i=0; i != imax+2; ++i){
+            // free slip fluid cells to the 3 East, 5 West, 7 North, 9 South, 15 NE, 11 NW, 13 SW, 17 SE
+            // no slip fluid cells to the 19 East, 21 West, 23 North, 25 South, 31 NE, 27 NW, 29 SW, 33 SE
+            // outflow fluid cells to the 35 East, 37 West, 39 North, 41 South, 47 NE, 43 NW, 45 SW, 49 SE
+            switch (FLAG[id(i,j)])
+            {
+            case 3:
+            case 19:
+            case 35:
+                F[id(i-1,j)] = U[id(i-1,j)];
+                break;
+
+            case 5:
+            case 21:
+            case 37:
+                F[id(i,j)] = U[id(i,j)];
+                break;
+            
+            case 7:
+            case 23:
+            case 39:
+                G[id(i,j)] = V[id(i,j)];
+                break;
+            
+            case 9:
+            case 25:
+            case 41:
+                G[id(i,j-1)] = V[id(i,j-1)];
+                break;
+            
+            default:
+                break;
+            }
+        }
     }
 }
 

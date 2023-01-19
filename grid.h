@@ -119,6 +119,7 @@ public:
     void CIRCLE(unsigned bcond, double x_center, double y_center, double radius);
     void PRINT_FLAG();
     void SETBCOND2();
+    void COMP_FG2();
     void FLAG_PP(); // post process of the flag array. gives each cell a value depending on its type (in or outside the obstacle), its neighbouring cell type, and the boundary condition 
     double x(unsigned i); // need to convert to double to get correct results :(
     double y(unsigned j);
