@@ -69,6 +69,26 @@ void grid::SETBCOND2(){
                 V[id(i,j-1)] = 0;
                 U[id(i,j)] = 0;
                 break;
+
+            // Outflow 3
+            // fluid cells to the 37 East, 35 West, 39 North, 41 South, 47 NE, 43 NW, 45 SW, 49 SE
+            // WARNING! there might be an obstacle! seperation to bound should be at least 2 cells! To be safe, use this only as bcond for the domain walls
+            case 35:
+                U[id(i-1,j)] = U[id(i-2,j)];
+                break;
+            case 41:
+                V[id(i,j-1)] = V[id(i,j-2)];
+                break;
+            case 43:
+                U[id(i-1,j)] = U[id(i-2,j)];
+                break;
+            case 45:
+                U[id(i-1,j)] = U[id(i-2,j)];
+                V[id(i,j-1)] = V[id(i,j-2)];
+                break;
+            case 49:
+                V[id(i,j-1)] = V[id(i,j-2)];
+                break;
             default:
                 break;
             }
@@ -109,6 +129,30 @@ void grid::SETBCOND2(){
                 break;
             case 9:
                 U[id(i,j)] = U[id(i,j-1)];
+                break;
+
+            // Outflow 3
+            // fluid cells to the 37 East, 35 West, 39 North, 41 South, 47 NE, 43 NW, 45 SW, 49 SE
+            // WARNING! there might be an obstacle! seperation to bound should be at least 2 cells! To be safe, use this only as bcond for the domain walls
+            case 35:
+                V[id(i,j)] = V[id(i-1,j)];
+                break;
+            case 41:
+                U[id(i,j)] = U[id(i,j-1)];
+                break;
+            case 37:
+                U[id(i,j)] = U[id(i+1,j)];
+                V[id(i,j)] = V[id(i+1,j)];
+                break;
+            case 39:
+                U[id(i,j)] = U[id(i,j+1)];
+                V[id(i,j)] = V[id(i,j+1)];
+                break;
+            case 47:
+            case 43:
+            case 45:
+            case 49:
+                cout << "ERROR! Outflow does not work for convex corners!" << endl;
                 break;
             default:
                 break;
@@ -342,6 +386,7 @@ void grid::SETBCOND(){
         for (auto j=1; j != jmax+1; ++j){
             // 3.26
             U[0 + (imax+2)*j] = U[1 + (imax+2)*j];
+            V[0 + (imax+2)*j] = V[1 + (imax+2)*j];
         }
         break;
     case 4:

@@ -38,24 +38,13 @@ void grid::ALG_WORKING(){
     COMP_DELT();
     
     DOMAIN_BOUNDARY();
-    //RECTANGLE(1,0.25,0.75,0.5,0.5);
+    RECTANGLE(2,0.25,0.75,0.5,0.5);
     //CIRCLE(1,0.75,0.75,0.25);
-    cout << "FLAG" << endl;
-    PRINT_FLAG();
-    FLAG_PP();
-    cout << "FLAG PP" << endl;
-    PRINT_FLAG();
+    //cout << "FLAG PP" << endl;
+    //PRINT_FLAG();
 
     SETBCOND2();
-    cout << "U new" << endl;
-    PRINT_TO_TERMINAL(U,imax+1,jmax+1);
     CHECKBCOND();
-
-    INIT_TEST_DATA();
-    SETBCOND();
-    CHECKBCOND();
-    cout << "U old" << endl;
-    PRINT_TO_TERMINAL(U,imax+1,jmax+1);
 
     CLEAR_OUTPUT_FILES();
     OUTPUTVEC();
