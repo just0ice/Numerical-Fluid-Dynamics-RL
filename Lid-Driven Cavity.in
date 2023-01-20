@@ -10,7 +10,7 @@
 # jmax
 128
 # t_end
-10.0
+0.02
 # tau
 0.5
 # itermanx

@@ -60,26 +60,72 @@ void grid::COMP_SPATIAL_DERIVATIVES(){
 
 }
 
+
+void grid::COMP_SPATIAL_DERIVATIVES2(){
+    // Computes the spatial derivatives according to 3.19
+    
+    CHECK_HIRT();
+
+    // 3.19a
+    for (auto j=0; j != jmax+2; ++j){
+        for (auto i=0; i != imax+2; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                du2_dx[id(i,j)] = 
+                        1/delx * ( pow( (U[id(i,j)] + U[id(i+1,j)])/2, 2) - pow( (U[id(i-1,j)] + U[id(i,j)])/2, 2) )
+                        + gamma * 1/delx * ( abs(U[id(i,j)] + U[id(i+1,j)])/2 * (U[id(i,j)] - U[id(i+1,j)])/2  - 
+                        abs(U[id(i-1,j)] + U[id(i,j)])/2 * (U[id(i-1,j)] - U[id(i,j)])/2 );
+                duv_dy[id(i,j)] = 
+                        1/dely * ( (V[id(i,j)] + V[id(i+1,j)])/2 * (U[id(i,j)] + U[id(i,j+1)])/2
+                        - (V[id(i,j-1)] + V[id(i+1,j-1)])/2 * (U[id(i,j-1)] + U[id(i,j)])/2 )
+
+                        + gamma * 1/dely * ( abs(V[id(i,j)] + V[id(i+1,j)])/2 * (U[id(i,j)] - U[id(i,j+1)])/2  
+                        - abs(V[id(i,j-1)] + V[id(i+1,j-1)])/2 * (U[id(i,j-1)] - U[id(i,j)])/2 );
+                d2u_dx2[id(i,j)] =
+                    ( U[id(i+1,j)] - 2*U[id(i,j)] + U[id(i-1,j)] ) / pow(delx, 2);
+                d2u_dy2[id(i,j)] =
+                    ( U[id(i,j+1)] - 2*U[id(i,j)] + U[id(i,j-1)] ) / pow(dely, 2);
+                dp_dx[id(i,j)] =
+                    ( P[id(i+1,j)] - P[id(i,j)] ) / delx;
+                
+
+                duv_dx[id(i,j)] = 
+                    1/delx * ( (U[id(i,j)] + U[id(i,j+1)])/2 * (V[id(i,j)] + V[id(i+1,j)])/2
+                    - (U[id(i-1,j)] + U[id(i-1,j+1)])/2 * (V[id(i-1,j)] + V[id(i,j)])/2 )
+
+                    + gamma * 1/delx * ( abs(U[id(i,j)] + U[id(i,j+1)])/2 * (V[id(i,j)] - V[id(i+1,j)])/2  
+                    - abs(U[id(i-1,j)] + U[id(i-1,j+1)])/2 * (V[id(i-1,j)] - V[id(i,j)])/2 );
+                dv2_dy[id(i,j)] = 
+                    1/dely * ( pow( (V[id(i,j)] + V[id(i,j+1)])/2, 2) - pow( (V[id(i,j-1)] + V[id(i,j)])/2, 2) )
+                    + gamma * 1/dely * ( abs(V[id(i,j)] + V[id(i,j+1)])/2 * (V[id(i,j)] - V[id(i,j+1)])/2  - 
+                    abs(V[id(i,j-1)] + V[id(i,j)])/2 * (V[id(i,j-1)] - V[id(i,j)])/2 );
+                d2v_dx2[id(i,j)] =
+                    ( V[id(i+1,j)] - 2*V[id(i,j)] + V[id(i-1,j)] ) / pow(delx, 2);
+                d2v_dy2[id(i,j)] =
+                    ( V[id(i,j+1)] - 2*V[id(i,j)] + V[id(i,j-1)] ) / pow(dely, 2);
+                dp_dy[id(i,j)] =
+                    ( P[id(i,j+1)] - P[id(i,j)] ) / dely;
+            }
+        }
+    }
+    //cout << "Spatial derivatives computed." << endl;
+}
+
 void grid::COMP_FG(){
     COMP_SPATIAL_DERIVATIVES();
     // Formulas 3.36, 3.37. At boundary 3.42
 
-    //  3.36
-    for (auto j=1; j != jmax+1; ++j){
-        for (auto i=1; i != imax; ++i){
-            F[id(i,j)] = U[id(i,j)]
-                + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
+    //  3.36 3.37
+    for (auto j=0; j != jmax+2; ++j){
+        for (auto i=0; i != imax+2; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                F[id(i,j)] = U[id(i,j)]
+                    + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
+                G[id(i,j)] = V[id(i,j)]
+                    + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
+            }
         }
     }
-
-    // 3.37
-    for (auto j=1; j != jmax; ++j){
-        for (auto i=1; i != imax+1; ++i){
-            G[id(i,j)] = V[id(i,j)]
-                + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
-        }
-    }
-
+    
     // 3.41, 3.42
     for (auto j=1; j != jmax+1; ++j){
         // shouldnt be needed here because same assignment is already in POISSON
@@ -98,26 +144,9 @@ void grid::COMP_FG(){
 }
 
 void grid::COMP_FG2(){
-    COMP_SPATIAL_DERIVATIVES();
+    COMP_SPATIAL_DERIVATIVES2();
     // Formulas 3.36, 3.37. At boundary 3.42
-
-    // Sets F and G also inside the obstacles. Should be useless but no problem. boundary values get overwritten later
-    //  3.36
-    for (auto j=1; j != jmax+1; ++j){
-        for (auto i=1; i != imax; ++i){
-            F[id(i,j)] = U[id(i,j)]
-                + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
-        }
-    }
-
-    // 3.37
-    for (auto j=1; j != jmax; ++j){
-        for (auto i=1; i != imax+1; ++i){
-            G[id(i,j)] = V[id(i,j)]
-                + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
-        }
-    }
-
+    
     for (auto j=0; j != jmax+2; ++j){
         for (auto i=0; i != imax+2; ++i){
             // (FLAG[id(i,j)]-2) % 16 fluid cells to the 1 West, 3 East, 7 South, 5 Nord, 9 NW, 11 SW, 13 NE, 15 SE
@@ -163,6 +192,13 @@ void grid::COMP_FG2(){
                 default:
                     break;
                 }
+            } else if (FLAG[id(i,j)] == 0){
+                //  3.36
+                F[id(i,j)] = U[id(i,j)]
+                + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
+                // 3.37
+                G[id(i,j)] = V[id(i,j)]
+                + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
             }
         }
     }
@@ -215,13 +251,15 @@ void grid::COMP_RES2(){
     // (3.45) , (3.46)
     res = 0;
 
-    for (auto j=1; j != jmax+1; ++j){
-        for (auto i=1; i != imax+1; ++i){
-            res += pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
-            + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+    for (auto j=0; j != jmax+2; ++j){
+        for (auto i=0; i != imax+2; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                res += pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
+                + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+            }
         }
     }
-    res = sqrt(res * 1/imax * 1/jmax);
+    res = sqrt(res * 1/N_fluid); // N_fluid from FLAG PP 
 }
 
 void grid::COMP_RES_EPS(){
@@ -345,9 +383,11 @@ int grid::POISSON2(){
 
         //3.44, omega = omg from input file
         
-        for (auto j=1; j != jmax+1; ++j){
-            for (auto i=1; i != imax+1; ++i){
-                P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 2/pow(delx,2) + 2/pow(dely,2) );
+        for (auto j=0; j != jmax+2; ++j){
+            for (auto i=0; i != imax+2; ++i){
+                if ( FLAG[id(i,j)] % 2 == 0 ){
+                    P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 2/pow(delx,2) + 2/pow(dely,2) );
+                }
             }
         }
 
@@ -409,6 +449,17 @@ void grid::ADAP_UV(){
     for (auto j=1; j != jmax; ++j){
         for (auto i=1; i != imax+1; ++i){
             V[id(i,j)] = G[id(i,j)] - delt/dely * ( P[id(i,j+1)] - P[id(i,j)] );
+        }
+    }
+}
+
+void grid::ADAP_UV2(){
+    for (auto j=0; j != jmax+2; ++j){
+        for (auto i=0; i != imax+2; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                U[id(i,j)] = F[id(i,j)] - delt/delx * ( P[id(i+1,j)] - P[id(i,j)] );
+                V[id(i,j)] = G[id(i,j)] - delt/dely * ( P[id(i,j+1)] - P[id(i,j)] );
+            }
         }
     }
 }

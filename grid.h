@@ -114,6 +114,7 @@ public:
     void ALG_WORKING();
 
     // Obstacles
+    unsigned int N_fluid;
     void DOMAIN_BOUNDARY();
     void RECTANGLE(unsigned bcond, double x_lo, double y_lo, double hight, double length);
     void CIRCLE(unsigned bcond, double x_center, double y_center, double radius);
@@ -122,6 +123,9 @@ public:
     void COMP_FG2();
     void COMP_RES2();
     int POISSON2(); 
+    void COMP_SPATIAL_DERIVATIVES2();
+    void ALG_BASE2();
+    void ADAP_UV2();
     void FLAG_PP(); // post process of the flag array. gives each cell a value depending on its type (in or outside the obstacle), its neighbouring cell type, and the boundary condition 
     double x(unsigned i); // need to convert to double to get correct results :(
     double y(unsigned j);

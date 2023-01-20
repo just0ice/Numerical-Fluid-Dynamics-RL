@@ -54,6 +54,8 @@ void grid::FLAG_PP(){
     vector<unsigned int> new_FLAG = vector<unsigned int>((imax + 2)*(jmax + 2),0); 
     unsigned edge_bin;
     unsigned bcond;
+    
+    N_fluid = 0; // number of fluid cells used for residual calculation later 
 
     for (auto j=0; j != jmax + 2; ++j){
         for (auto i=0; i != imax + 2; ++i){
@@ -112,6 +114,8 @@ void grid::FLAG_PP(){
                     cout << "WARNING! Boundary cell with inadmissable edges at i = " << i << ", j = " << j << endl;
                     break;
                 }
+            } else {
+                ++N_fluid;
             }
             // flow cell
             // lets see if it works without
