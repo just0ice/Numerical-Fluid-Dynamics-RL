@@ -47,10 +47,6 @@ void grid::ALG_WORKING(){
     SETBCOND2();
     CHECKBCOND();
     COMP_FG();
-    cout << "F old" << endl;
-    PRINT_TO_TERMINAL(F,imax+1,jmax+1);
-    cout << "G old" << endl;
-    PRINT_TO_TERMINAL(G,imax+1,jmax+1);
 
     vector<double> Fold = F;
     vector<double> Gold = G;
@@ -62,7 +58,9 @@ void grid::ALG_WORKING(){
     INIT_TEST_DATA();
     SETBCOND2();
     CHECKBCOND();
+    cout << "TEST 1" << endl;
     COMP_FG2();
+    cout << "TEST 2" << endl;
 
     for (auto j = 0; j != jmax+2; ++j){
         for (auto i = 0; i != imax+2; ++i){
@@ -75,6 +73,12 @@ void grid::ALG_WORKING(){
     PRINT_TO_TERMINAL(Fdiff,imax+1,jmax+1);
     cout << "G diff" << endl;
     PRINT_TO_TERMINAL(Gdiff,imax+1,jmax+1);
+    
+
+    COMP_RHS();
+    POISSON2();
+    cout << "P" << endl;
+    PRINT_TO_TERMINAL(P,imax+1,jmax+1);
     
 
     CLEAR_OUTPUT_FILES();

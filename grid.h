@@ -106,8 +106,8 @@ public:
     bool eps_E(unsigned i); 
     bool eps_S(unsigned j);
     bool eps_N(unsigned j);
-    void COMP_RES_2(); // same as COMP_RES() but more readable and with epsilons
-    int POISSON_2(); // same as POISSON() but with epsilons
+    void COMP_RES_EPS(); // same as COMP_RES() but more readable and with epsilons
+    int POISSON_EPS(); // same as POISSON() but with epsilons
 
     // Algorithms
     void ALG_BASE();
@@ -120,6 +120,8 @@ public:
     void PRINT_FLAG();
     void SETBCOND2();
     void COMP_FG2();
+    void COMP_RES2();
+    int POISSON2(); 
     void FLAG_PP(); // post process of the flag array. gives each cell a value depending on its type (in or outside the obstacle), its neighbouring cell type, and the boundary condition 
     double x(unsigned i); // need to convert to double to get correct results :(
     double y(unsigned j);

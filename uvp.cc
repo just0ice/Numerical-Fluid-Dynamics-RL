@@ -101,6 +101,7 @@ void grid::COMP_FG2(){
     COMP_SPATIAL_DERIVATIVES();
     // Formulas 3.36, 3.37. At boundary 3.42
 
+    // Sets F and G also inside the obstacles. Should be useless but no problem. boundary values get overwritten later
     //  3.36
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax; ++i){
@@ -119,37 +120,49 @@ void grid::COMP_FG2(){
 
     for (auto j=0; j != jmax+2; ++j){
         for (auto i=0; i != imax+2; ++i){
-            // free slip fluid cells to the 3 East, 5 West, 7 North, 9 South, 15 NE, 11 NW, 13 SW, 17 SE
-            // no slip fluid cells to the 19 East, 21 West, 23 North, 25 South, 31 NE, 27 NW, 29 SW, 33 SE
-            // outflow fluid cells to the 35 East, 37 West, 39 North, 41 South, 47 NE, 43 NW, 45 SW, 49 SE
-            switch (FLAG[id(i,j)])
-            {
-            case 3:
-            case 19:
-            case 35:
-                F[id(i-1,j)] = U[id(i-1,j)];
-                break;
+            // (FLAG[id(i,j)]-2) % 16 fluid cells to the 1 West, 3 East, 7 South, 5 Nord, 9 NW, 11 SW, 13 NE, 15 SE
+            if (FLAG[id(i,j)] >= 2){
+                switch ((FLAG[id(i,j)]-2) % 16)
+                {
+                case 1:
+                    F[id(i-1,j)] = U[id(i-1,j)];
+                    break;
 
-            case 5:
-            case 21:
-            case 37:
-                F[id(i,j)] = U[id(i,j)];
-                break;
-            
-            case 7:
-            case 23:
-            case 39:
-                G[id(i,j)] = V[id(i,j)];
-                break;
-            
-            case 9:
-            case 25:
-            case 41:
-                G[id(i,j-1)] = V[id(i,j-1)];
-                break;
-            
-            default:
-                break;
+                case 3:
+                    F[id(i,j)] = U[id(i,j)];
+                    break;
+                
+                case 5:
+                    G[id(i,j)] = V[id(i,j)];
+                    break;
+                
+                case 7:
+                    G[id(i,j-1)] = V[id(i,j-1)];
+                    break;
+
+                case 9:
+                    F[id(i-1,j)] = U[id(i-1,j)];
+                    G[id(i,j)] = V[id(i,j)];
+                    break;
+                
+                case 11:
+                    F[id(i-1,j)] = U[id(i-1,j)];
+                    G[id(i,j-1)] = V[id(i,j-1)];
+                    break;
+                
+                case 13:
+                    G[id(i,j)] = V[id(i,j)];
+                    F[id(i,j)] = U[id(i,j)];
+                    break;
+
+                case 15:
+                    G[id(i,j-1)] = V[id(i,j-1)];
+                    F[id(i,j)] = U[id(i,j)];
+                    break;
+
+                default:
+                    break;
+                }
             }
         }
     }
@@ -198,7 +211,20 @@ void grid::COMP_RES(){
     res = sqrt(res * 1/imax * 1/jmax);
 }
 
-void grid::COMP_RES_2(){
+void grid::COMP_RES2(){
+    // (3.45) , (3.46)
+    res = 0;
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            res += pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
+            + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+        }
+    }
+    res = sqrt(res * 1/imax * 1/jmax);
+}
+
+void grid::COMP_RES_EPS(){
     // (3.45) , (3.46)
     res = 0;
     vector<double> res_vec;
@@ -259,13 +285,87 @@ int grid::POISSON(){
     return 0;
 }
 
+int grid::POISSON2(){
+    // res is the L2 norm of the residual, see (3.46) and (3.45)
+    // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
 
-int grid::POISSON_2(){
+    COMP_RES2();
+    cout << "Initial res = " << res << endl;
+
+    it = 0;
+
+    while (it < itermax && res > eps)
+    {
+
+        // (below 3.53)
+        for (auto j=0; j != jmax+2; ++j){
+            for (auto i=0; i != imax+2; ++i){
+                // (FLAG[id(i,j)]-2) % 16 fluid cells to the 1 West, 3 East, 5 Nord, 7 South, 9 NW, 11 SW, 13 NE, 15 SE
+                if (FLAG[id(i,j)] >= 2){
+                    switch ((FLAG[id(i,j)] - 2) % 16)
+                    {
+                    case 1:
+                        P[id(i,j)] = P[id(i-1,j)];
+                        break;
+
+                    case 3:
+                        P[id(i,j)] = P[id(i+1,j)];
+                        break;
+                    
+                    case 5:
+                        P[id(i,j)] = P[id(i,j+1)];
+                        break;
+                    
+                    case 7:
+                        P[id(i,j)] = P[id(i,j-1)];
+                        break;
+
+                    case 9:
+                        P[id(i,j)] = ( P[id(i,j+1)] + P[id(i-1,j)] )/2;
+                        break;
+                    
+                    case 11:
+                        P[id(i,j)] = ( P[id(i,j-1)] + P[id(i-1,j)] )/2;
+                        break;
+                    
+                    case 13:
+                        P[id(i,j)] = ( P[id(i,j+1)] + P[id(i+1,j)] )/2;
+                        break;
+                    case 15:
+                        P[id(i,j)] = ( P[id(i,j-1)] + P[id(i+1,j)] )/2;
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+            }
+        }
+        
+
+        //3.44, omega = omg from input file
+        
+        for (auto j=1; j != jmax+1; ++j){
+            for (auto i=1; i != imax+1; ++i){
+                P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 2/pow(delx,2) + 2/pow(dely,2) );
+            }
+        }
+
+        COMP_RES2();
+        ++it;
+    }
+    cout << "Final res = " << res << " at iteration " << it <<  endl;
+
+    return 0;
+}
+
+
+int grid::POISSON_EPS(){
     // res is the L2 norm of the residual, see (3.46) and (3.45)
     // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
     vector<double> res_list; // for file output
 
-    COMP_RES_2();
+    COMP_RES_EPS();
     res_list.push_back(res);
     cout << "Initial res = " << res << endl;
 
@@ -281,14 +381,14 @@ int grid::POISSON_2(){
             }
         }
 
-        COMP_RES_2();
+        COMP_RES_EPS();
         res_list.push_back(res);
         ++it;
     }
     cout << "Final res = " << res << " at iteration " << it <<  endl;
 
-    ADD_TO_FILE("res_2.tsv", res_list);
-    cout << "Res written to file res_2.tsv" << endl;
+    ADD_TO_FILE("res_EPS.tsv", res_list);
+    cout << "Res written to file res_EPS.tsv" << endl;
     
 
     return 0;
