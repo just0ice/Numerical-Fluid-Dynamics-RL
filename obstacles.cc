@@ -20,7 +20,7 @@ double grid::y(unsigned j){
 }
 
 void grid::DOMAIN_BOUNDARY(){
-    for (auto j=0; j != imax+2; j++){
+    for (auto j=0; j != jmax+2; j++){
         FLAG[id(0,j)] = wE;
         FLAG[id(imax+1,j)] = wW;
     }

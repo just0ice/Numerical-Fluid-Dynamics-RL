@@ -96,10 +96,52 @@ double abs_max(vector<double> X){
     return max;
 }
 
+double grid::abs_max2(vector<double> X){
+    double max = 0;
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                if (abs(X[id(i,j)]) > max) max = abs(X[id(i,j)]);
+            }
+        }
+    }
+
+    return max;
+}
+
 void grid::COMP_DELT(){
     // according to 3.50
-    double Umax = abs_max(U);
-    double Vmax = abs_max(V);
+    double Umax = abs_max2(U);
+    double Vmax = abs_max2(V);
+
+    //cout << "Umax = " << Umax << ", Vmax = " << Vmax << endl;
+    if (Umax == 0){
+        if (Vmax == 0)
+            delt = tau * Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) );
+        else
+            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), dely/Vmax );
+    } 
+    else {
+        if (Vmax == 0)
+            delt = tau * min( Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/Umax );
+        else
+            delt = tau * min( {Re/2 * 1/( 1/pow(delx,2) + 1/pow(dely, 2) ), delx/Umax , dely/Vmax});
+    }
+
+    //delt = min(delx, dely);
+    //cout << "delt = " << delt << endl;
+
+    // check if delt negative
+    if (delt < 0)
+        cout << "WARNING! delt is smaller than 0!" << endl;
+
+}
+
+void grid::COMP_DELT2(){
+    // according to 3.50
+    double Umax = abs_max2(U);
+    double Vmax = abs_max2(V);
 
     //cout << "Umax = " << Umax << ", Vmax = " << Vmax << endl;
     if (Umax == 0){

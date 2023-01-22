@@ -213,6 +213,17 @@ void grid::COMP_RHS(){
     }
 }
 
+void grid::COMP_RHS2(){
+    // of eq 3.38
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                RHS[id(i,j)] = 1/delt * ( (F[id(i,j)] - F[id(i-1,j)])/delx + (G[id(i,j)] - G[id(i,j-1)])/dely  );
+            }
+        }
+    }
+}
+
 // epsilon from (3.43).
 bool grid::eps_W(unsigned i){
     if (i == 1) return 0;
