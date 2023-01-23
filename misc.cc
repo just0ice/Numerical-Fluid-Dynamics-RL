@@ -86,7 +86,7 @@ void grid::OUTPUTVEC(){
 void grid::CLEAR_OUTPUT_FILES(){
     std::ofstream file;
 
-    for (auto fname : {"Ucc.tsv","Vcc.tsv","Pcc.tsv","res.tsv","flag.tsv"}){
+    for (auto fname : {"Ucc.tsv","Vcc.tsv","Pcc.tsv","res.tsv","flag.tsv","temp.tsv"}){
         file.open(fname, std::ofstream::out | std::ofstream::trunc);
         file.close();
     }

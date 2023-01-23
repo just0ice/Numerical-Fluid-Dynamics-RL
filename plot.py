@@ -20,12 +20,15 @@ dim,U_1d = readfile("Ucc.tsv")
 print(len(U_1d))
 dim,V_1d = readfile("Vcc.tsv")
 dim,P_1d = readfile("Pcc.tsv")
+dim,temp_1d = readfile("temp.tsv")
 dim,flag_1d = readfile("flag.tsv")
+
 
 imax = int(dim[0])
 jmax = int(dim[1])
 xlength = float(dim[2])
-ylength = float(dim[3])
+ylength = float(dim[3])*10
+print("imax = ",imax,", jmax = ",jmax,", xlength = ",xlength,", ylength = ",ylength)
 
 # set up the grid and convert 2d arrays to 1d array for time step t_i
 t_i = len(U_1d)-1
@@ -36,15 +39,17 @@ U = np.zeros((jmax,imax))
 V = np.zeros((jmax,imax))
 P = np.zeros((jmax,imax))
 flag = np.zeros((jmax,imax))
+temp = np.zeros((jmax,imax))
+
 
 for j in range(0,jmax):
     for i in range(0,imax):
-        U[j][i] = U_1d[t_i][i+jmax*j]
-        V[j][i] = V_1d[t_i][i+jmax*j]
-        P[j][i] = P_1d[t_i][i+jmax*j]
-        flag[j][i] = flag_1d[t_i][i+jmax*j]
+        U[j][i] = U_1d[t_i][i+imax*j]
+        V[j][i] = V_1d[t_i][i+imax*j]
+        P[j][i] = P_1d[t_i][i+imax*j]
+        flag[j][i] = flag_1d[t_i][i+imax*j]
+        temp[j][i] = temp_1d[t_i][i+imax*j]
     
-
 speed = np.sqrt(np.square(U) + np.square(V))
 
 #fig = plt.figure(figsize=(7, 7))
@@ -70,14 +75,16 @@ else:
 
 extent = (0, xlength, 0, ylength)
 mask = (flag != 0.).astype(float)
+print(temp);
 U = np.ma.array(U, mask=mask)
 V = np.ma.array(V, mask=mask)
 P = np.ma.array(P, mask=mask)
+temp = np.ma.array(temp)
 #plt.streamplot(X, Y, U, V, density=0.6, color='k', linewidth=lw)
 plt.streamplot(X, Y, U, V, density=[0.5, 1])
 #plt.streamplot(X, Y, U, V, density=[0.5, 1], broken_streamlines=False)
 
-plt.imshow(P, extent = extent, origin="lower", cmap="Blues")
+plt.imshow(temp, extent = extent, origin="lower", cmap="Blues")
 plt.colorbar(label=r"$P$")
 
 
@@ -88,7 +95,8 @@ bounds=[0,1]
 norm = colors.BoundaryNorm(bounds, cmap.N)
 
 # Create a mask
-plt.imshow(mask, alpha=mask, extent=extent, origin="lower", cmap=cmap, norm=norm)
+#plt.imshow(mask, alpha=mask, extent=extent, origin="lower", cmap=cmap, norm=norm)
 
 plt.savefig("plot.pdf")
 plt.show()
+

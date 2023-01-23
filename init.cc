@@ -51,7 +51,7 @@ int grid::READ_PARAMETER(string inputfile = "settings.in"){
     // compute delx, dely
     // physical grid spacing according to 3.1.1 p. 22. ghost zones are outside xlength x ylength!
     delx = xlength / imax;
-    dely = xlength / jmax;
+    dely = ylength / jmax;
     cout << "delx = " << delx << ", dely = " << dely << endl;
 
     return 0;

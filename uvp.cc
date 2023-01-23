@@ -150,7 +150,14 @@ void grid::COMP_FG2(){
     for (auto j=0; j != jmax+2; ++j){
         for (auto i=0; i != imax+2; ++i){
             // (FLAG[id(i,j)]-2) % 16 fluid cells to the 1 West, 3 East, 7 South, 5 Nord, 9 NW, 11 SW, 13 NE, 15 SE
-            if (FLAG[id(i,j)] >= 2){
+            if (FLAG[id(i,j)] == 0){
+                //  3.36
+                F[id(i,j)] = U[id(i,j)]
+                + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
+                // 3.37
+                G[id(i,j)] = V[id(i,j)]
+                + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
+            } else if (FLAG[id(i,j)] >= 2){
                 switch ((FLAG[id(i,j)]-2) % 16)
                 {
                 case 1:
@@ -192,13 +199,6 @@ void grid::COMP_FG2(){
                 default:
                     break;
                 }
-            } else if (FLAG[id(i,j)] == 0){
-                //  3.36
-                F[id(i,j)] = U[id(i,j)]
-                + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
-                // 3.37
-                G[id(i,j)] = V[id(i,j)]
-                + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
             }
         }
     }
@@ -404,7 +404,9 @@ int grid::POISSON2(){
 
         COMP_RES2();
         ++it;
+        //cout << it << endl;
     }
+
     cout << "Final res = " << res << " at iteration " << it <<  endl;
 
     return 0;
