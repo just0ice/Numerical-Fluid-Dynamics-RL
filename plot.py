@@ -27,7 +27,7 @@ dim,flag_1d = readfile("flag.tsv")
 imax = int(dim[0])
 jmax = int(dim[1])
 xlength = float(dim[2])
-ylength = float(dim[3])*10
+ylength = float(dim[3])#*10
 print("imax = ",imax,", jmax = ",jmax,", xlength = ",xlength,", ylength = ",ylength)
 
 # set up the grid and convert 2d arrays to 1d array for time step t_i

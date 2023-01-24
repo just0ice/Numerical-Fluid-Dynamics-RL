@@ -113,19 +113,22 @@ void grid::ALG_STEP(){
 void grid::ALG_WORKING(){
     cout << "ALG_STEP" << endl;
     READ_PARAMETER("Step.in");
+    xlength = 30;
+    ylength = 30;
     imax = 30;
-    jmax = 10;
+    jmax = 30;
     t_end = 0.003;
     INIT_UVP();
     // upper half only
     cout << jmax/2 << endl;
     
+    /*
     for (unsigned j = 0; j != jmax/2 + 1; ++j){
         for (auto i = 0; i != imax + 2; ++i){
             U[id(i,j)] = 0;
         }
     }
-
+    */
 
     // Algorihm 1. Base version, p. 40
     double t = 0;
@@ -134,6 +137,7 @@ void grid::ALG_WORKING(){
 
     // general geometries
     //RECTANGLE(2,0,0.75,0.75,7.5);
+    RECTANGLE(2,0,15,15,15);
     DOMAIN_BOUNDARY();
     FLAG_PP();
 
@@ -141,11 +145,11 @@ void grid::ALG_WORKING(){
         cout << "t = " << t << endl;
         COMP_DELT2();
         SETBCOND2();
-        CHECKBCOND();
+        //CHECKBCOND();
         // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
         
-        for (auto j = 1; j != jmax + 1; ++j){
-            U[id(imax,j)] = 1.0;
+        for (auto j = 1; j != jmax+1; ++j){
+            U[id(0,j)] = 1.0;
         }
         COMP_FG2();
         COMP_RHS2();
