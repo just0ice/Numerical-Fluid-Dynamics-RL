@@ -125,11 +125,19 @@ public:
     void COMP_RES2();
     void COMP_RHS2();
     int POISSON2(); 
+    int POISSON_EPS2(); 
+    int COMPARE_POISSON(); 
     void COMP_SPATIAL_DERIVATIVES2();
     void ALG_BASE2();
     void ADAP_UV2();
+    void ALG_WORKING2();
     double abs_max2(vector<double> X);
     void COMP_DELT2();
+    bool eps_W2(unsigned i); // in uvp.cc according to (3.43), below 
+    void COMP_RES_EPS2();
+    bool eps_E2(unsigned i); 
+    bool eps_S2(unsigned j);
+    bool eps_N2(unsigned j);
     void FLAG_PP(); // post process of the flag array. gives each cell a value depending on its type (in or outside the obstacle), its neighbouring cell type, and the boundary condition 
     double x(unsigned i); // need to convert to double to get correct results :(
     double y(unsigned j);

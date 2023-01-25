@@ -69,7 +69,7 @@ void grid::COMP_SPATIAL_DERIVATIVES2(){
     // 3.19a
     for (auto j=0; j != jmax+2; ++j){
         for (auto i=0; i != imax+2; ++i){
-            if (FLAG[id(i,j)] % 2 == 0){
+            if (FLAG[id(i,j)] == 0){
                 du2_dx[id(i,j)] = 
                         1/delx * ( pow( (U[id(i,j)] + U[id(i+1,j)])/2, 2) - pow( (U[id(i-1,j)] + U[id(i,j)])/2, 2) )
                         + gamma * 1/delx * ( abs(U[id(i,j)] + U[id(i+1,j)])/2 * (U[id(i,j)] - U[id(i+1,j)])/2  - 
@@ -115,15 +115,17 @@ void grid::COMP_FG(){
     // Formulas 3.36, 3.37. At boundary 3.42
 
     //  3.36 3.37
-    for (auto j=0; j != jmax+2; ++j){
-        for (auto i=0; i != imax+2; ++i){
-            if (FLAG[id(i,j)] % 2 == 0){
-                F[id(i,j)] = U[id(i,j)]
-                    + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
-                G[id(i,j)] = V[id(i,j)]
-                    + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
-            }
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax; ++i){
+            F[id(i,j)] = U[id(i,j)]
+                + delt * ( 1/Re * (d2u_dx2[id(i,j)] + d2u_dy2[id(i,j)]) - du2_dx[id(i,j)] - duv_dy[id(i,j)] + GX);
         }
+    }
+    for (auto j=1; j != jmax; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            G[id(i,j)] = V[id(i,j)]
+                + delt * ( 1/Re * (d2v_dx2[id(i,j)] + d2v_dy2[id(i,j)]) - duv_dx[id(i,j)] - dv2_dy[id(i,j)] + GY);
+            }
     }
     
     // 3.41, 3.42
@@ -217,33 +219,12 @@ void grid::COMP_RHS2(){
     // of eq 3.38
     for (auto j=1; j != jmax+1; ++j){
         for (auto i=1; i != imax+1; ++i){
-            if (FLAG[id(i,j)] % 2 == 0){
+            if (FLAG[id(i,j)] == 0){
                 RHS[id(i,j)] = 1/delt * ( (F[id(i,j)] - F[id(i-1,j)])/delx + (G[id(i,j)] - G[id(i,j-1)])/dely  );
             }
         }
     }
 }
-
-// epsilon from (3.43).
-bool grid::eps_W(unsigned i){
-    if (i == 1) return 0;
-    else return 1;
-} 
-
-bool grid::eps_E(unsigned i){
-    if (i == imax) return 0;
-    else return 1;
-} 
-
-bool grid::eps_S(unsigned j){
-    if (j == 1) return 0;
-    else return 1;
-} 
-
-bool grid::eps_N(unsigned j){
-    if (j == jmax) return 0;
-    else return 1;
-} 
 
 void grid::COMP_RES(){
     // (3.45) , (3.46)
@@ -264,7 +245,7 @@ void grid::COMP_RES2(){
 
     for (auto j=0; j != jmax+2; ++j){
         for (auto i=0; i != imax+2; ++i){
-            if (FLAG[id(i,j)] % 2 == 0){
+            if (FLAG[id(i,j)] == 0){
                 res += pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
                 + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
             }
@@ -334,6 +315,120 @@ int grid::POISSON(){
     return 0;
 }
 
+void grid::COMP_RES_EPS2(){
+    // (3.45) , (3.46)
+    res = 0;
+    vector<double> res_vec;
+    res_vec = vector<double>((imax + 2)*(jmax + 2),0); 
+    bool eps_E, eps_W, eps_N, eps_S;
+    // (3.45)
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            eps_E = !(bool)FLAG[id(i+1,j)];
+            eps_W = !(bool)FLAG[id(i-1,j)];
+            eps_N = !(bool)FLAG[id(i,j+1)];
+            eps_S = !(bool)FLAG[id(i,j-1)];
+            if (FLAG[id(i,j)] == 0){
+                res_vec[id(i,j)] = ( eps_E * ( P[id(i+1,j)] - P[id(i,j)] ) - eps_W * ( P[id(i,j)] - P[id(i-1,j)] ) )/pow(delx, 2) 
+                + ( eps_N * ( P[id(i,j+1)] - P[id(i,j)] ) - eps_S * ( P[id(i,j)] - P[id(i,j-1)] ) )/pow(dely, 2)  - RHS[id(i,j)];
+            }
+            //cout << res_vec[id(i,j)] << endl;
+        }
+    }
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            if (FLAG[id(i,j)] == 0){
+                res += pow(res_vec[id(i,j)], 2);
+            }
+        }
+    }
+    res = sqrt( res/N_fluid );
+}
+
+int grid::POISSON_EPS2(){
+    // res is the L2 norm of the residual, see (3.46) and (3.45)
+    // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
+
+    COMP_RES_EPS2();
+    cout << "Initial res = " << res << endl;
+
+    it = 0;
+
+    for (auto j=0; j != jmax+2; ++j){
+            for (auto i=0; i != imax+2; ++i){
+                // (FLAG[id(i,j)]-2) % 16 fluid cells to the 1 West, 3 East, 5 Nord, 7 South, 9 NW, 11 SW, 13 NE, 15 SE
+                if (FLAG[id(i,j)] >= 2){
+                    switch ((FLAG[id(i,j)] - 2) % 16)
+                    {
+                    case 1:
+                        P[id(i,j)] = P[id(i-1,j)];
+                        break;
+
+                    case 3:
+                        //cout << i << endl;
+                        P[id(i,j)] = P[id(i+1,j)];
+                        break;
+                    
+                    case 5:
+                        P[id(i,j)] = P[id(i,j+1)];
+                        break;
+                    
+                    case 7:
+                        P[id(i,j)] = P[id(i,j-1)];
+                        break;
+
+                    case 9:
+                        P[id(i,j)] = ( P[id(i,j+1)] + P[id(i-1,j)] )/2;
+                        break;
+                    
+                    case 11:
+                        P[id(i,j)] = ( P[id(i,j-1)] + P[id(i-1,j)] )/2;
+                        break;
+                    
+                    case 13:
+                        P[id(i,j)] = ( P[id(i,j+1)] + P[id(i+1,j)] )/2;
+                        break;
+                    case 15:
+                        P[id(i,j)] = ( P[id(i,j-1)] + P[id(i+1,j)] )/2;
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+            }
+        }
+
+    bool eps_E, eps_W, eps_N, eps_S;
+    while (it < itermax && res > eps)
+    {
+        
+        for (auto j=1; j != jmax+1; ++j){
+            for (auto i=1; i != imax+1; ++i){
+                if ( FLAG[id(i,j)] == 0 ){
+                    eps_E = !(bool)FLAG[id(i+1,j)];
+                    eps_W = !(bool)FLAG[id(i-1,j)];
+                    eps_N = !(bool)FLAG[id(i,j+1)];
+                    eps_S = !(bool)FLAG[id(i,j-1)];
+                    //if (eps_E + eps_W == 0) cout << "i = " << i << "j = " << j << endl;
+                    
+                    P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (eps_E*P[id(i+1,j)] + eps_W*P[id(i-1,j)])/pow(delx,2) + (eps_N*P[id(i,j+1)] + eps_S*P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( ( eps_E + eps_W )/pow(delx,2) + ( eps_S + eps_N )/pow(dely,2) );
+                    //cout << P[id(i,j)] << endl;
+                }
+            }
+        }
+
+        COMP_RES_EPS2();
+        ++it;
+        //cout << res << endl;
+    }
+
+    cout << "Final res = " << res << " at iteration " << it <<  endl;
+
+    return 0;
+}
+
 int grid::POISSON2(){
     // res is the L2 norm of the residual, see (3.46) and (3.45)
     // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
@@ -343,6 +438,7 @@ int grid::POISSON2(){
 
     it = 0;
 
+    bool eps_E, eps_W, eps_N, eps_S;
     while (it < itermax && res > eps)
     {
 
@@ -396,8 +492,8 @@ int grid::POISSON2(){
         
         for (auto j=0; j != jmax+2; ++j){
             for (auto i=0; i != imax+2; ++i){
-                if ( FLAG[id(i,j)] % 2 == 0 ){
-                    P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( 2/pow(delx,2) + 2/pow(dely,2) );
+                if ( FLAG[id(i,j)] == 0 ){
+                    P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (P[id(i+1,j)] + P[id(i-1,j)])/pow(delx,2) + (P[id(i,j+1)] + P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/(  2/pow(delx,2) + 2/pow(dely,2) );
                 }
             }
         }
@@ -411,6 +507,28 @@ int grid::POISSON2(){
 
     return 0;
 }
+
+
+// epsilon from (3.43).
+bool grid::eps_W(unsigned i){
+    if (i == 1) return 0;
+    else return 1;
+} 
+
+bool grid::eps_E(unsigned i){
+    if (i == imax) return 0;
+    else return 1;
+} 
+
+bool grid::eps_S(unsigned j){
+    if (j == 1) return 0;
+    else return 1;
+} 
+
+bool grid::eps_N(unsigned j){
+    if (j == jmax) return 0;
+    else return 1;
+} 
 
 
 int grid::POISSON_EPS(){
@@ -430,7 +548,7 @@ int grid::POISSON_EPS(){
         
         for (auto j=1; j != jmax+1; ++j){
             for (auto i=1; i != imax+1; ++i){
-                P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( eps_E(i)*(P[id(i+1,j)] + eps_W(i)*P[id(i-1,j)])/pow(delx,2) + (eps_N(j)*P[id(i,j+1)] + eps_S(j)*P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( ( eps_E(i) + eps_W(i) )/pow(delx,2) + ( eps_S(j) + eps_N(j) )/pow(dely,2) );
+                P[id(i,j)] =  P[id(i,j)] * (1 - omg) + ( (eps_E(i)*P[id(i+1,j)] + eps_W(i)*P[id(i-1,j)])/pow(delx,2) + (eps_N(j)*P[id(i,j+1)] + eps_S(j)*P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( ( eps_E(i) + eps_W(i) )/pow(delx,2) + ( eps_S(j) + eps_N(j) )/pow(dely,2) );
             }
         }
 
@@ -447,6 +565,96 @@ int grid::POISSON_EPS(){
     return 0;
 }
 
+
+int grid::COMPARE_POISSON(){
+    // res is the L2 norm of the residual, see (3.46) and (3.45)
+    // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
+
+    COMP_RES();
+    cout << "Initial res = " << res << endl;
+
+    it = 0;
+    bool eps_E2, eps_W2, eps_N2, eps_S2;
+
+    while (it < itermax && res > eps)
+    {
+        double temp1;
+        double temp2;
+        // (3.48)
+        // (below 3.53)
+        for (auto j=0; j != jmax+2; ++j){
+            for (auto i=0; i != imax+2; ++i){
+                // (FLAG[id(i,j)]-2) % 16 fluid cells to the 1 West, 3 East, 5 Nord, 7 South, 9 NW, 11 SW, 13 NE, 15 SE
+                if (FLAG[id(i,j)] >= 2){
+                    switch ((FLAG[id(i,j)] - 2) % 16)
+                    {
+                    case 1:
+                        P[id(i,j)] = P[id(i-1,j)];
+                        break;
+
+                    case 3:
+                        P[id(i,j)] = P[id(i+1,j)];
+                        break;
+                    
+                    case 5:
+                        P[id(i,j)] = P[id(i,j+1)];
+                        break;
+                    
+                    case 7:
+                        P[id(i,j)] = P[id(i,j-1)];
+                        break;
+
+                    case 9:
+                        P[id(i,j)] = ( P[id(i,j+1)] + P[id(i-1,j)] )/2;
+                        break;
+                    
+                    case 11:
+                        P[id(i,j)] = ( P[id(i,j-1)] + P[id(i-1,j)] )/2;
+                        break;
+                    
+                    case 13:
+                        P[id(i,j)] = ( P[id(i,j+1)] + P[id(i+1,j)] )/2;
+                        break;
+                    case 15:
+                        P[id(i,j)] = ( P[id(i,j-1)] + P[id(i+1,j)] )/2;
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+            }
+        }
+
+        //3.44, omega = omg from input file
+        
+        for (auto j=1; j != jmax+1; ++j){
+            for (auto i=1; i != imax+1; ++i){
+                eps_E2 = !(bool)FLAG[id(i+1,j)];
+                eps_W2 = !(bool)FLAG[id(i-1,j)];
+                eps_N2 = !(bool)FLAG[id(i,j+1)];
+                eps_S2 = !(bool)FLAG[id(i,j-1)];
+                temp2 = P[id(i,j)] * (1 - omg) + ( (eps_E2*P[id(i+1,j)] + eps_W2*P[id(i-1,j)])/pow(delx,2) + (eps_N2*P[id(i,j+1)] + eps_S2*P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( ( eps_E2 + eps_W2 )/pow(delx,2) + ( eps_S2 + eps_N2 )/pow(dely,2) );
+                temp1 = P[id(i,j)] * (1 - omg) + ( (eps_E(i)*P[id(i+1,j)] + eps_W(i)*P[id(i-1,j)])/pow(delx,2) + (eps_N(j)*P[id(i,j+1)] + eps_S(j)*P[id(i,j-1)])/pow(dely,2) - RHS[id(i,j)]) * omg/( ( eps_E(i) + eps_W(i) )/pow(delx,2) + ( eps_S(j) + eps_N(j) )/pow(dely,2) ) ;
+                if (temp1 != temp2 ){
+                    cout << "Pressure calculation error " << temp1 << " vs " << temp2 <<" at i = " << i << ", j = "<< j << endl;
+                }
+                P[id(i,j)] = temp1;
+            }
+        }
+        COMP_RES2();
+        temp2 = res;
+        COMP_RES();
+        temp1 = res;
+        if (abs(temp1 - temp2) > 0.0000000001 ){
+            cout << "Residual calculation error " << temp1 << " vs " << temp2 << endl;
+        }
+        ++it;
+    }
+    cout << "Final res = " << res << " at iteration " << it <<  endl;
+
+    return 0;
+}
 
 
 
@@ -469,7 +677,7 @@ void grid::ADAP_UV(){
 void grid::ADAP_UV2(){
     for (auto j=0; j != jmax+2; ++j){
         for (auto i=0; i != imax+2; ++i){
-            if (FLAG[id(i,j)] % 2 == 0){
+            if (FLAG[id(i,j)] == 0){
                 U[id(i,j)] = F[id(i,j)] - delt/delx * ( P[id(i+1,j)] - P[id(i,j)] );
                 V[id(i,j)] = G[id(i,j)] - delt/dely * ( P[id(i,j+1)] - P[id(i,j)] );
             }

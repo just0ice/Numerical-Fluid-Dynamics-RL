@@ -17,7 +17,6 @@ def readfile(fname):
 
 # read the grid data from file into a 1d array. first index time step. second index grid idex
 dim,U_1d = readfile("Ucc.tsv")
-print(len(U_1d))
 dim,V_1d = readfile("Vcc.tsv")
 dim,P_1d = readfile("Pcc.tsv")
 dim,temp_1d = readfile("temp.tsv")
@@ -75,7 +74,6 @@ else:
 
 extent = (0, xlength, 0, ylength)
 mask = (flag != 0.).astype(float)
-print(temp);
 U = np.ma.array(U, mask=mask)
 V = np.ma.array(V, mask=mask)
 P = np.ma.array(P, mask=mask)

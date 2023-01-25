@@ -60,6 +60,8 @@ int grid::READ_PARAMETER(string inputfile = "settings.in"){
 void grid::INIT_UVP(){
     // taking a 1D vector. Pseudo 2D conversion is i = x + width*y, x = i % width; y = i / width.
     // 1 block width boundary. Whole array dimension [0,imax+1]x[0,jmax+1]. Without boundary [1,imax]x[1,jmax]
+    delx = xlength / imax;
+    dely = ylength / jmax;
 
     U = vector<double>((imax + 2)*(jmax + 2),UI); 
     V = vector<double>((imax + 2)*(jmax + 2),VI);

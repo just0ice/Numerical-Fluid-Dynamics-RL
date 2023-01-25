@@ -108,16 +108,16 @@ void grid::INIT_TEST_DATA(){
     
     for (auto i : boundi){
         for (auto j=0; j != jmax + 2; ++j){
-            U[i + (imax+2)*j] = -1;
-            V[i + (imax+2)*j] = -1;
-            P[i + (imax+2)*j] = -1;
+            U[i + (imax+2)*j] = 0;
+            V[i + (imax+2)*j] = 0;
+            P[i + (imax+2)*j] = 0;
         }
     } 
     for (auto j : boundj){
         for (auto i=0; i != imax + 2; ++i){
-            U[i + (imax+2)*j] = -1;
-            V[i + (imax+2)*j] = -1;
-            P[i + (imax+2)*j] = -1;
+            U[i + (imax+2)*j] = 0;
+            V[i + (imax+2)*j] = 0;
+            P[i + (imax+2)*j] = 0;
         }
     } 
 

@@ -74,6 +74,7 @@ void grid::SETBCOND2(){
             // fluid cells to the 37 West, 35 East, 39 North, 41 South, 47 NE, 43 NW, 45 SW, 49 SE
             // WARNING! there might be an obstacle! seperation to bound should be at least 2 cells! To be safe, use this only as bcond for the domain walls
             case 35:
+                cout << i << endl;
                 U[id(i-1,j)] = U[id(i-2,j)];
                 break;
             case 41:
@@ -175,7 +176,7 @@ void grid::SETBCOND(){
 
 
     // first assignment /////////////////////////////////////////////////////////////////////////////////////////////////
-    switch (wW){
+    switch (wE){
     case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
@@ -211,7 +212,7 @@ void grid::SETBCOND(){
         break;
     }
 
-    switch (wE){
+    switch (wW){
     case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
@@ -438,15 +439,15 @@ void grid::CHECKBCOND(){
     // 1 free-slip, 2 no-slip, 3 outflow, 4 periodic. see p. 41, to be added: Inflow condition
     // indexing: U[i + (imax+2)*j]
 
-    switch (wW){
+    switch (wE){
     case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.21
-            if (U[imax + (imax+2)*j] != 0) 
+            if (U[id(imax,j)] != 0) 
                 cout << "Warning! No-slip boundary condition for U 3.21 not fulfilled at wW j = " << j << endl; 
             // 3.23
-            if (V[(imax+1) + (imax+2)*j] != - V[imax + (imax+2)*j]) 
+            if (V[id(imax+1,j)] != - V[id(imax,j)]) 
                 cout << "Warning! No-slip boundary condition for V 3.23 not fulfilled at wW j = " << j << endl;
         }
         break;
@@ -465,9 +466,9 @@ void grid::CHECKBCOND(){
         // Outflow
         for (auto j=1; j != jmax+1; ++j){
             // 3.26
-            if (U[imax + (imax+2)*j] != U[(imax-1) + (imax+2)*j])
+            if (U[id(imax,j)] != U[id(imax-1,j)])
                 cout << "Warning! Outflow boundary condition for U 3.26 not fulfilled at wW j = " << j << endl;
-            if (V[(imax+1) + (imax+2)*j] != V[imax + (imax+2)*j])
+            if (V[id(imax+1,j)] != V[id(imax,j)])
                 cout << "Warning! Outflow boundary condition for V 3.26 not fulfilled at wW j = " << j << endl;
         }
         break;
@@ -475,15 +476,15 @@ void grid::CHECKBCOND(){
         break;
     }
 
-    switch (wE){
+    switch (wW){
     case 2:
         // No-slip
         for (auto j=1; j != jmax+1; ++j){
             // 3.21
-            if (U[0 + (imax+2)*j] != 0)
+            if (U[id(0,j)] != 0)
                 cout << "Warning! No-slip boundary condition for U 3.21 not fulfilled at wE j = " << j << endl; 
             // 3.23
-            check_cond(V[0 + (imax+2)*j] != - V[1 + (imax+2)*j], wN, "wE", "V", j);
+            check_cond(V[id(0,j)] != - V[id(1,j)], wN, "wE", "V", j);
         }
         break;
     case 1:
@@ -501,9 +502,9 @@ void grid::CHECKBCOND(){
         // Outflow
         for (auto j=1; j != jmax+1; ++j){
             // 3.26
-            if (U[0 + (imax+2)*j] != U[1 + (imax+2)*j])
+            if (U[id(0,j)] != U[id(1,j)])
                 cout << "Warning! Warning! Outflow boundary condition for U 3.26 not fulfilled at wE j = " << j << endl;
-            if (V[0 + (imax+2)*j] != V[1 + (imax+2)*j])
+            if (V[id(0,j)] != V[id(1,j)])
                 cout << "Warning! Outflow boundary condition for V 3.26 not fulfilled at wE j = " << j << endl;
         }
         break;
@@ -516,9 +517,9 @@ void grid::CHECKBCOND(){
         // No-slip
         for (auto i=1; i != imax+1; ++i){
             // 3.21
-            check_cond(V[i + (imax+2)*jmax] != 0, wN, "wN", "V", i);
+            check_cond(V[id(i,jmax)] != 0, wN, "wN", "V", i);
             // 3.23
-            check_cond(U[i + (imax+2)*(jmax+1)] != - U[i + (imax+2)*jmax], wN, "wN", "U", i);
+            check_cond(U[id(i,jmax+1)] != - U[id(i,jmax)], wN, "wN", "U", i);
         }
         break;
     case 1:
@@ -534,8 +535,8 @@ void grid::CHECKBCOND(){
         // out-flow
         for (auto i=1; i != imax+1; ++i){
             // 3.26
-            check_cond(U[i + (imax+2)*(jmax+1)] != U[i + (imax+2)*jmax], wN, "wN", "U", i);
-            check_cond(V[i + (imax+2)*jmax] != V[i + (imax+2)*(jmax-1)], wN, "wN", "V", i);
+            check_cond(U[id(i,jmax+1)] != U[id(i,jmax)], wN, "wN", "U", i);
+            check_cond(V[id(i,jmax)] != V[id(i,jmax-1)], wN, "wN", "V", i);
         }
         break;
     case 4:
