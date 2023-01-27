@@ -232,51 +232,26 @@ void grid::ALG_WORKING2(){
 
     while (t < t_end){
         cout << "t = " << t << endl;
-        COMP_DELT2();
-        SETBCOND();
+        COMP_DELT();
         // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
         /*
         for (auto i = 1; i != imax + 1; ++i){
             U[id(i,jmax+1)] = 2.0 - U[id(i,jmax)];
         }
         */
+        SETBCOND();
         for (auto j = 1; j != jmax + 1; ++j){
-            U[id(1,j)] = 1.0;
+            U[id(0,j)] = 1.0;
+            //V[id(1,j)] = 0;
         }
-        COMP_FG2();
+        COMP_FG();
         COMP_RHS();
         // SOR Cycle
-        POISSON2();
-        ADAP_UV2();
+        POISSON();
+        ADAP_UV();
         t += delt;
         n += 1;
     }
-
-     // testing where the residual is high
-
-    vector<double> temp;
-    double tempmax = 0;
-    
-    // testing where the residual is high
-    temp = vector<double>((imax + 2)*(jmax + 2),0); 
-
-    for (auto j=1; j != jmax+1; ++j){
-        for (auto i=1; i != imax+1; ++i){
-            if (FLAG[id(i,j)] % 2 == 0){
-                temp[id(i,j)] = pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
-                + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
-            }
-        }
-    }
-    //cout << "Temp" << endl;
-    //PRINT_TO_TERMINAL(temp,imax+1,jmax+1);
-    vector<double> temp_out;
-    for (auto j=1; j != jmax + 1; ++j){
-        for (auto i=1; i != imax + 1; ++i){
-            temp_out.push_back(temp[id(i,j)]);
-        }
-    }
-    ADD_TO_FILE("temp.tsv", temp_out);
 
     OUTPUTVEC();
 }

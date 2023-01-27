@@ -312,6 +312,30 @@ int grid::POISSON(){
     }
     cout << "Final res = " << res << " at iteration " << it <<  endl;
 
+    vector<double> temp;
+    double tempmax = 0;
+    
+    // testing where the residual is high
+    temp = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                temp[id(i,j)] = pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
+                + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+            }
+        }
+    }
+    //cout << "Temp" << endl;
+    //PRINT_TO_TERMINAL(temp,imax+1,jmax+1);
+    vector<double> temp_out;
+    for (auto j=1; j != jmax + 1; ++j){
+        for (auto i=1; i != imax + 1; ++i){
+            temp_out.push_back(temp[id(i,j)]);
+        }
+    }
+    ADD_TO_FILE("temp.tsv", temp_out);
+
     return 0;
 }
 
@@ -426,6 +450,32 @@ int grid::POISSON_EPS2(){
 
     cout << "Final res = " << res << " at iteration " << it <<  endl;
 
+    // testing where the residual is high
+
+    vector<double> temp;
+    double tempmax = 0;
+    
+    // testing where the residual is high
+    temp = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                temp[id(i,j)] = pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
+                + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+            }
+        }
+    }
+    //cout << "Temp" << endl;
+    //PRINT_TO_TERMINAL(temp,imax+1,jmax+1);
+    vector<double> temp_out;
+    for (auto j=1; j != jmax + 1; ++j){
+        for (auto i=1; i != imax + 1; ++i){
+            temp_out.push_back(temp[id(i,j)]);
+        }
+    }
+    ADD_TO_FILE("temp.tsv", temp_out);
+
     return 0;
 }
 
@@ -505,6 +555,32 @@ int grid::POISSON2(){
 
     cout << "Final res = " << res << " at iteration " << it <<  endl;
 
+    // testing where the residual is high
+
+    vector<double> temp;
+    double tempmax = 0;
+    
+    // testing where the residual is high
+    temp = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                temp[id(i,j)] = pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
+                + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+            }
+        }
+    }
+    //cout << "Temp" << endl;
+    //PRINT_TO_TERMINAL(temp,imax+1,jmax+1);
+    vector<double> temp_out;
+    for (auto j=1; j != jmax + 1; ++j){
+        for (auto i=1; i != imax + 1; ++i){
+            temp_out.push_back(temp[id(i,j)]);
+        }
+    }
+    ADD_TO_FILE("temp.tsv", temp_out);
+
     return 0;
 }
 
@@ -560,6 +636,32 @@ int grid::POISSON_EPS(){
 
     ADD_TO_FILE("res_EPS.tsv", res_list);
     cout << "Res written to file res_EPS.tsv" << endl;
+
+    // testing where the residual is high
+
+    vector<double> temp;
+    double tempmax = 0;
+    
+    // testing where the residual is high
+    temp = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                temp[id(i,j)] = pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
+                + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+            }
+        }
+    }
+    //cout << "Temp" << endl;
+    //PRINT_TO_TERMINAL(temp,imax+1,jmax+1);
+    vector<double> temp_out;
+    for (auto j=1; j != jmax + 1; ++j){
+        for (auto i=1; i != imax + 1; ++i){
+            temp_out.push_back(temp[id(i,j)]);
+        }
+    }
+    ADD_TO_FILE("temp.tsv", temp_out);
     
 
     return 0;
