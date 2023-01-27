@@ -74,7 +74,6 @@ void grid::SETBCOND2(){
             // fluid cells to the 37 West, 35 East, 39 North, 41 South, 47 NE, 43 NW, 45 SW, 49 SE
             // WARNING! there might be an obstacle! seperation to bound should be at least 2 cells! To be safe, use this only as bcond for the domain walls
             case 35:
-                cout << i << endl;
                 U[id(i-1,j)] = U[id(i-2,j)];
                 break;
             case 41:

@@ -30,13 +30,14 @@ void grid::ALG_BASE(){
 }
 
 void grid::ALG_BASE2(){
-    READ_PARAMETER("Lid-Driven Cavity.in");
+    READ_PARAMETER("settings/Lid-Driven Cavity.in");
     INIT_UVP();
 
     // Algorihm 1. Base version, p. 40
     double t = 0;
     unsigned n = 1;
     CLEAR_OUTPUT_FILES();
+    CLEAR_OUTPUT_FILES("Lid-Driven Cavity/");
 
     // general geometries
     DOMAIN_BOUNDARY();
@@ -62,12 +63,13 @@ void grid::ALG_BASE2(){
      // testing where the residual is high
 
     OUTPUTVEC();
+    OUTPUTVEC("Lid-Driven Cavity/");
 }
 
 
 void grid::ALG_STEP(){
     cout << "ALG_STEP" << endl;
-    READ_PARAMETER("Step.in");
+    READ_PARAMETER("settings/Step.in");
     INIT_UVP();
     // upper half only
     cout << jmax/2 << endl;
@@ -81,6 +83,7 @@ void grid::ALG_STEP(){
     double t = 0;
     unsigned n = 1;
     CLEAR_OUTPUT_FILES();
+    CLEAR_OUTPUT_FILES("Step/");
 
     // general geometries
     RECTANGLE(2,0,0.75,0.75,7.5);
@@ -108,6 +111,91 @@ void grid::ALG_STEP(){
     }
 
     OUTPUTVEC();
+    OUTPUTVEC("Step/");
+}
+
+
+void grid::ALG_EVANGELION(){
+    READ_PARAMETER("settings/Evangelion.in");
+    imax  = 30;
+    jmax = 40;
+    INIT_UVP();
+
+    // Algorihm 1. Base version, p. 40
+    double t = 0;
+    unsigned n = 1;
+    CLEAR_OUTPUT_FILES("Evangelion/");
+    CLEAR_OUTPUT_FILES();
+
+    // general geometries
+    DOMAIN_BOUNDARY();
+    RECTANGLE(2,0,4,1,1);
+    RECTANGLE(2,2,4,1,1);
+    RECTANGLE(2,0,2,4,1);
+    RECTANGLE(2,2,2,4,1);
+    FLAG_PP();
+
+    while (t < t_end){
+        cout << "t = " << t << endl;
+        COMP_DELT2();
+        SETBCOND2();
+        // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
+        for (auto i = 1; i != imax + 1; ++i){
+            V[id(i,0)] = 1.0;
+        }
+        COMP_FG2();
+        COMP_RHS();
+        // SOR Cycle
+        POISSON2();
+        ADAP_UV2();
+        t += delt;
+        n += 1;
+    }
+
+     // testing where the residual is high
+
+    OUTPUTVEC();
+    OUTPUTVEC("Evangelion/");
+}
+
+void grid::ALG_DISC(){
+    READ_PARAMETER("settings/Disc.in");
+    //imax  = 110;
+    //jmax = 20;
+    INIT_UVP();
+
+    // Algorihm 1. Base version, p. 40
+    double t = 0;
+    unsigned n = 1;
+    CLEAR_OUTPUT_FILES("Disc/");
+    CLEAR_OUTPUT_FILES();
+
+    // general geometries
+    DOMAIN_BOUNDARY();
+    CIRCLE(2,2.0,2.0,0.5);
+    FLAG_PP();
+
+    while (t < t_end){
+        cout << "t = " << t << endl;
+        COMP_DELT2();
+        SETBCOND2();
+        // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
+        for (auto j = 1; j != jmax + 1; ++j){
+            U[id(0,j)] = 1.0;
+        }
+        COMP_FG2();
+        COMP_RHS();
+        // SOR Cycle
+        POISSON2();
+        ADAP_UV2();
+        t += delt;
+        n += 1;
+    }
+
+     // testing where the residual is high
+
+    OUTPUTVEC();
+    OUTPUTVEC("Disc/");
 }
 
 void grid::ALG_WORKING(){
@@ -179,30 +267,6 @@ void grid::ALG_WORKING(){
         n += 1;
     }
 
-    vector<double> temp;
-    double tempmax = 0;
-    
-    // testing where the residual is high
-    temp = vector<double>((imax + 2)*(jmax + 2),0); 
-
-    for (auto j=1; j != jmax+1; ++j){
-        for (auto i=1; i != imax+1; ++i){
-            if (FLAG[id(i,j)] % 2 == 0){
-                temp[id(i,j)] = pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
-                + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
-            }
-        }
-    }
-    //cout << "Temp" << endl;
-    //PRINT_TO_TERMINAL(temp,imax+1,jmax+1);
-    vector<double> temp_out;
-    for (auto j=1; j != jmax + 1; ++j){
-        for (auto i=1; i != imax + 1; ++i){
-            temp_out.push_back(temp[id(i,j)]);
-        }
-    }
-    ADD_TO_FILE("temp.tsv", temp_out);
-
     OUTPUTVEC();
 }
 
@@ -252,6 +316,29 @@ void grid::ALG_WORKING2(){
         t += delt;
         n += 1;
     }
+
+    // testing where the residual is high
+    vector<double> temp;
+    double tempmax = 0;
+    temp = vector<double>((imax + 2)*(jmax + 2),0); 
+
+    for (auto j=1; j != jmax+1; ++j){
+        for (auto i=1; i != imax+1; ++i){
+            if (FLAG[id(i,j)] % 2 == 0){
+                temp[id(i,j)] = pow( (P[id(i+1,j)] - 2*P[id(i,j)] + P[id(i-1,j)] )/pow(delx, 2) 
+                + (P[id(i,j+1)] - 2*P[id(i,j)] + P[id(i,j-1)] )/pow(dely, 2) - RHS[id(i,j)], 2);
+            }
+        }
+    }
+    //cout << "Temp" << endl;
+    //PRINT_TO_TERMINAL(temp,imax+1,jmax+1);
+    vector<double> temp_out;
+    for (auto j=1; j != jmax + 1; ++j){
+        for (auto i=1; i != imax + 1; ++i){
+            temp_out.push_back(temp[id(i,j)]);
+        }
+    }
+    ADD_TO_FILE("temp.tsv", temp_out);
 
     OUTPUTVEC();
 }

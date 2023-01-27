@@ -92,9 +92,9 @@ public:
     void PRINT_UVP(); // print U as a matrix into the Terminal
     void PRINT_TO_TERMINAL(vector<double> X, unsigned iend, unsigned jend);
     void ADD_TO_FILE(string fname, vector<double> X); // writes vector X to file fname
-    void OUTPUTVEC(); // see 4.1.4 on page 54 
+    void OUTPUTVEC(string folder = ""); // see 4.1.4 on page 54 
     void CC_AVERAGE_UV(); // computes the cc average of U and V and stores the result in Ucc and Vcc
-    void CLEAR_OUTPUT_FILES();
+    void CLEAR_OUTPUT_FILES(string folder = "");
     void INIT_TEST_DATA();
     unsigned id(unsigned i, unsigned j);
 
@@ -112,6 +112,8 @@ public:
     // Algorithms
     void ALG_BASE();
     void ALG_WORKING();
+    void ALG_EVANGELION();
+    void ALG_DISC();
 
     // Obstacles
     unsigned int N_fluid;

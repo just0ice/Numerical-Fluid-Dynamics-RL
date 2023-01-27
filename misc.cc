@@ -65,12 +65,12 @@ void grid::CC_AVERAGE_UV(){
 
 }
 
-void grid::OUTPUTVEC(){
+void grid::OUTPUTVEC(string folder){
     if (Ucc.empty() || Vcc.empty() || Pcc.empty())
         CC_AVERAGE_UV();
-    ADD_TO_FILE("Ucc.tsv", Ucc);
-    ADD_TO_FILE("Vcc.tsv", Vcc);
-    ADD_TO_FILE("Pcc.tsv", Pcc);
+    ADD_TO_FILE(folder+"Ucc.tsv", Ucc);
+    ADD_TO_FILE(folder+"Vcc.tsv", Vcc);
+    ADD_TO_FILE(folder+"Pcc.tsv", Pcc);
 
     // remove the boundary edges of the domain from the flag array. Flag out is double to be able to use ADD_TO_FILE which expects a double vector
     vector<double> FLAG_OUT;
@@ -79,15 +79,15 @@ void grid::OUTPUTVEC(){
             FLAG_OUT.push_back(FLAG[id(i,j)]);
         }
     }
-    ADD_TO_FILE("flag.tsv", FLAG_OUT);
+    ADD_TO_FILE(folder+"flag.tsv", FLAG_OUT);
 }
 
 
-void grid::CLEAR_OUTPUT_FILES(){
+void grid::CLEAR_OUTPUT_FILES(string folder){
     std::ofstream file;
 
     for (auto fname : {"Ucc.tsv","Vcc.tsv","Pcc.tsv","res.tsv","flag.tsv","temp.tsv"}){
-        file.open(fname, std::ofstream::out | std::ofstream::trunc);
+        file.open(folder+fname, std::ofstream::out | std::ofstream::trunc);
         file.close();
     }
 }
