@@ -20,6 +20,7 @@ y_factor = 1
 broken_streamlines = True
 density=[0.5, 1]
 
+
 problem = 4
 if problem == 0:
     folder = ""

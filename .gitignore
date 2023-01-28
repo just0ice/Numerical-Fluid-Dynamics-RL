@@ -23,3 +23,9 @@ test.py
 temp.tsv
 flag.tsv
 plot2.py
+flag.tsv
+plots/Step.pdf
+plots/Lid-Driven Cavity.pdf
+plots/Evangelion.pdf
+.gitignore
+plots/Disc.pdf
