@@ -3,17 +3,16 @@
 
 int main()
 {
-    grid grid1;
-    grid grid2;
-    grid grid3;
-    grid grid4;
-    
-    grid1.ALG_STEP();
-    //grid1.ALG_BASE();
-    grid2.ALG_BASE2();
+    grid grid1, grid2, grid3, grid4, grid5;
+
     //grid1.ALG_WORKING2();
-    grid3.ALG_EVANGELION();
-    grid4.ALG_DISC();
+    //grid1.ALG_BASE();
+    
+    //grid1.ALG_DISC(1);
+    //grid2.ALG_DISC(20);
+    //grid3.ALG_DISC(100);
+    //grid4.ALG_BASE2();
+    grid5.ALG_EVANGELION();
 
     return 0;
 }

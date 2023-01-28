@@ -11,11 +11,11 @@
 # jmax
 75
 # t_end
-30.0
+10.0
 # tau
 0.5
 # itermanx
-1000
+100
 # eps
 0.001
 # omg

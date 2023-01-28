@@ -21,14 +21,15 @@ broken_streamlines = True
 density=[0.5, 1]
 cbar_location = "right"
 
-for problem in ["Lid-Driven Cavity", "Step", "Evangelion", "Disc"]:
+for problem in ["Disc1","Disc20","Disc100","Lid-Driven Cavity", "Evangelion", "Disc"]:
     print(problem)
     folder = problem + "/"
     if problem == "":
         folder = ""
     if problem == "Lid-Driven Cavity":
         plt.figure(figsize=(16, 16), dpi=100)
-    if problem == "Step":
+        broken_streamlines = True
+    if "Step" in problem:
         folder = "Step/"
         density=[4, 0.25]
         broken_streamlines = False
@@ -36,11 +37,21 @@ for problem in ["Lid-Driven Cavity", "Step", "Evangelion", "Disc"]:
         plt.figure(figsize=(32, 8), dpi=100)
         plt.xlim(5, 20) 
         #y_factor = 3
-    if problem == "Evangelion":
-        cbar_location = "right"
-    if problem == "Disc":
-        broken_streamlines = False
+    if "Disc" in problem:
+        broken_streamlines = True
         cbar_location = "bottom"
+        plt.figure(figsize=(32, 8), dpi=100)
+    if problem == "Disc1":
+        folder = "Disc/1.000000/"
+    if problem == "Disc20":
+        folder = "Disc/20.000000/"
+    if problem == "Disc100":
+        folder = "Disc/100.000000/"
+    
+    if problem == "Evangelion":
+        density=[0.5, 1]
+        cbar_location = "right"
+        broken_streamlines = True
 
     # read the grid data from file into a 1d array. first index time step. second index grid idex
     dim,U_1d = readfile(folder+"Ucc.tsv")
@@ -112,7 +123,7 @@ for problem in ["Lid-Driven Cavity", "Step", "Evangelion", "Disc"]:
 
     #temp = np.ma.array(temp)
     #plt.streamplot(X, Y, U, V, density=0.6, color='k', linewidth=lw)
-    if problem == "Disc":
+    if "Disc" in problem:
         streamlines = 20
         y_seed = np.linspace(1,3,streamlines)
         x_seed = dx*np.ones(streamlines)
@@ -124,8 +135,8 @@ for problem in ["Lid-Driven Cavity", "Step", "Evangelion", "Disc"]:
     #plt.streamplot(X, Y, U, V, density=[0.5, 1], broken_streamlines=False)
 
     plt.imshow(P, extent = extent, origin="lower", cmap="Blues")
-    cbar = plt.colorbar(label=r"$P$", location=cbar_location)
-    cbar.ax.tick_params(labelsize=40)
+    #cbar = plt.colorbar(label=r"$P$", location=cbar_location)
+    #cbar.ax.tick_params(labelsize=40)
 
 
     #
@@ -139,7 +150,7 @@ for problem in ["Lid-Driven Cavity", "Step", "Evangelion", "Disc"]:
     plt.imshow(mask, alpha=mask, extent=extent, origin="lower", cmap=colors.ListedColormap(['lightgrey']), norm=norm)
     plt.imshow(border, alpha=border, extent=extent, origin="lower", cmap=cmap, norm=norm)
 
-    plt.savefig("plots/"+problem+".pdf")
+    plt.savefig("plots/"+problem+".pdf", bbox_inches='tight')
     plt.clf()
     print("\n")
 

@@ -351,7 +351,7 @@ int grid::POISSON_EPS2(){
     // epsilon E, N, W, S are set to 1 as this is identically fulfilled via (3.48)
 
     COMP_RES_EPS2();
-    cout << "Initial res = " << res << endl;
+    //cout << "Initial res = " << res << endl;
 
     it = 0;
 
@@ -424,7 +424,7 @@ int grid::POISSON_EPS2(){
         //cout << res << endl;
     }
 
-    cout << "Final res = " << res << " at iteration " << it <<  endl;
+    //cout << "Final res = " << res << " at iteration " << it <<  endl;
 
     return 0;
 }

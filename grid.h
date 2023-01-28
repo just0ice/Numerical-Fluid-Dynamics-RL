@@ -113,11 +113,11 @@ public:
     void ALG_BASE();
     void ALG_WORKING();
     void ALG_EVANGELION();
-    void ALG_DISC();
+    void ALG_DISC(double Re_man);
+    void ALG_STEP(double Re_man = 0);
 
     // Obstacles
     unsigned int N_fluid;
-    void ALG_STEP();
     void DOMAIN_BOUNDARY();
     void RECTANGLE(unsigned bcond, double x_lo, double y_lo, double hight, double length);
     void CIRCLE(unsigned bcond, double x_center, double y_center, double radius);

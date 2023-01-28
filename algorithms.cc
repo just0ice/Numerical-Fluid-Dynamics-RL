@@ -1,5 +1,6 @@
 #include "grid.h"
 
+
 void grid::ALG_BASE(){
     READ_PARAMETER("Lid-Driven Cavity.in");
     INIT_UVP();
@@ -67,9 +68,15 @@ void grid::ALG_BASE2(){
 }
 
 
-void grid::ALG_STEP(){
+void grid::ALG_STEP(double Re_man){
     cout << "ALG_STEP" << endl;
     READ_PARAMETER("settings/Step.in");
+    if (Re_man != 0){
+        Re = Re_man;
+        cout << "Manual Reynolds Number Re = " << Re << endl;
+    }
+    string folder = "Step/"+to_string(Re)+"/";
+
     INIT_UVP();
     // upper half only
     cout << jmax/2 << endl;
@@ -82,8 +89,8 @@ void grid::ALG_STEP(){
     // Algorihm 1. Base version, p. 40
     double t = 0;
     unsigned n = 1;
-    CLEAR_OUTPUT_FILES();
-    CLEAR_OUTPUT_FILES("Step/");
+    CLEAR_OUTPUT_FILES(); 
+    CLEAR_OUTPUT_FILES(folder);
 
     // general geometries
     RECTANGLE(2,0,0.75,0.75,7.5);
@@ -91,7 +98,7 @@ void grid::ALG_STEP(){
     FLAG_PP();
 
     while (t < t_end){
-        cout << "t = " << t << endl;
+        //cout << "t = " << t << endl;
         COMP_DELT();
         SETBCOND2();
         //CHECKBCOND();
@@ -111,14 +118,14 @@ void grid::ALG_STEP(){
     }
 
     OUTPUTVEC();
-    OUTPUTVEC("Step/");
+    OUTPUTVEC(folder);
 }
 
 
 void grid::ALG_EVANGELION(){
     READ_PARAMETER("settings/Evangelion.in");
-    imax  = 30;
-    jmax = 40;
+    //imax  = 30;
+    //jmax = 40;
     INIT_UVP();
 
     // Algorihm 1. Base version, p. 40
@@ -158,16 +165,21 @@ void grid::ALG_EVANGELION(){
     OUTPUTVEC("Evangelion/");
 }
 
-void grid::ALG_DISC(){
+void grid::ALG_DISC(double Re_man){
     READ_PARAMETER("settings/Disc.in");
     //imax  = 110;
     //jmax = 20;
+    if (Re_man != 0){
+        Re = Re_man;
+        cout << "Manual Reynolds Number Re = " << Re << endl;
+    }
+    string folder = "Disc/"+to_string(Re)+"/";
     INIT_UVP();
 
     // Algorihm 1. Base version, p. 40
     double t = 0;
     unsigned n = 1;
-    CLEAR_OUTPUT_FILES("Disc/");
+    CLEAR_OUTPUT_FILES(folder);
     CLEAR_OUTPUT_FILES();
 
     // general geometries
@@ -176,11 +188,12 @@ void grid::ALG_DISC(){
     FLAG_PP();
 
     while (t < t_end){
-        cout << "t = " << t << endl;
+        //cout << "t = " << t << endl;
         COMP_DELT2();
         SETBCOND2();
         // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
         for (auto j = 1; j != jmax + 1; ++j){
+            //U[id(0,j)] = 1.5 * ( 1 - pow(j-jmax/2,2)/pow(jmax/2,2));
             U[id(0,j)] = 1.0;
         }
         COMP_FG2();
@@ -195,7 +208,7 @@ void grid::ALG_DISC(){
      // testing where the residual is high
 
     OUTPUTVEC();
-    OUTPUTVEC("Disc/");
+    OUTPUTVEC(folder);
 }
 
 void grid::ALG_WORKING(){
