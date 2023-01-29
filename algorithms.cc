@@ -2,7 +2,7 @@
 
 
 void grid::ALG_BASE(){
-    READ_PARAMETER("Lid-Driven Cavity.in");
+    READ_PARAMETER("Cavity.in");
     INIT_UVP();
 
     // Algorihm 1. Base version, p. 40
@@ -31,14 +31,12 @@ void grid::ALG_BASE(){
 }
 
 void grid::ALG_BASE2(){
-    READ_PARAMETER("settings/Lid-Driven Cavity.in");
+    READ_PARAMETER("settings/Cavity.in");
     INIT_UVP();
 
     // Algorihm 1. Base version, p. 40
     double t = 0;
     unsigned n = 1;
-    CLEAR_OUTPUT_FILES();
-    CLEAR_OUTPUT_FILES("Lid-Driven Cavity/");
 
     // general geometries
     DOMAIN_BOUNDARY();
@@ -59,23 +57,42 @@ void grid::ALG_BASE2(){
         ADAP_UV2();
         t += delt;
         n += 1;
+
+        if (t >= 1 && (t - delt) <= 1){
+            CLEAR_OUTPUT_FILES("Cavity/1/");
+            OUTPUTVEC("Cavity/1/");
+        }
+        if (t >= 2 && (t - delt) <= 2){
+            CLEAR_OUTPUT_FILES("Cavity/2/");
+            OUTPUTVEC("Cavity/2/");
+        }
+        if (t >= 5 && (t - delt) <= 5){
+            CLEAR_OUTPUT_FILES("Cavity/5/");
+            OUTPUTVEC("Cavity/5/");
+        }
+        if (t >= 10 && (t - delt) <= 10){
+            CLEAR_OUTPUT_FILES("Cavity/10/");
+            OUTPUTVEC("Cavity/10/");
+        }
     }
 
      // testing where the residual is high
-
+    CLEAR_OUTPUT_FILES();
+    CLEAR_OUTPUT_FILES("Cavity/");
     OUTPUTVEC();
-    OUTPUTVEC("Lid-Driven Cavity/");
+    OUTPUTVEC("Cavity/");
 }
 
 
 void grid::ALG_STEP(double Re_man){
     cout << "ALG_STEP" << endl;
     READ_PARAMETER("settings/Step.in");
+    string folder = "Step/";
     if (Re_man != 0){
         Re = Re_man;
         cout << "Manual Reynolds Number Re = " << Re << endl;
+        string folder = "Step/"+to_string(Re)+"/";
     }
-    string folder = "Step/"+to_string(Re)+"/";
 
     INIT_UVP();
     // upper half only
@@ -98,8 +115,11 @@ void grid::ALG_STEP(double Re_man){
     FLAG_PP();
 
     while (t < t_end){
-        //cout << "t = " << t << endl;
+        cout << "t = " << t << endl;
         COMP_DELT();
+        if (delt < 0.02){
+            delt = 0.02;
+        }
         SETBCOND2();
         //CHECKBCOND();
         // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
@@ -122,8 +142,11 @@ void grid::ALG_STEP(double Re_man){
 }
 
 
-void grid::ALG_EVANGELION(){
+void grid::ALG_EVANGELION(double V_in){
     READ_PARAMETER("settings/Evangelion.in");
+    cout << "V_in = " << V_in << endl;
+    string folder = "Evangelion/"+to_string(V_in)+"/";
+    VI = V_in; // keep the initial residual low
     //imax  = 30;
     //jmax = 40;
     INIT_UVP();
@@ -131,7 +154,7 @@ void grid::ALG_EVANGELION(){
     // Algorihm 1. Base version, p. 40
     double t = 0;
     unsigned n = 1;
-    CLEAR_OUTPUT_FILES("Evangelion/");
+    CLEAR_OUTPUT_FILES(folder);
     CLEAR_OUTPUT_FILES();
 
     // general geometries
@@ -148,7 +171,7 @@ void grid::ALG_EVANGELION(){
         SETBCOND2();
         // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
         for (auto i = 1; i != imax + 1; ++i){
-            V[id(i,0)] = 1.0;
+            V[id(i,0)] = V_in;
         }
         COMP_FG2();
         COMP_RHS();
@@ -162,13 +185,14 @@ void grid::ALG_EVANGELION(){
      // testing where the residual is high
 
     OUTPUTVEC();
-    OUTPUTVEC("Evangelion/");
+    OUTPUTVEC(folder);
 }
 
 void grid::ALG_DISC(double Re_man){
     READ_PARAMETER("settings/Disc.in");
-    //imax  = 110;
-    //jmax = 20;
+    //imax  = 440;
+    //jmax = 80;
+    itermax = 100;
     if (Re_man != 0){
         Re = Re_man;
         cout << "Manual Reynolds Number Re = " << Re << endl;
@@ -188,12 +212,12 @@ void grid::ALG_DISC(double Re_man){
     FLAG_PP();
 
     while (t < t_end){
-        //cout << "t = " << t << endl;
+        cout << "t = " << t << endl;
         COMP_DELT2();
         SETBCOND2();
         // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
         for (auto j = 1; j != jmax + 1; ++j){
-            //U[id(0,j)] = 1.5 * ( 1 - pow(j-jmax/2,2)/pow(jmax/2,2));
+            U[id(0,j)] = 1.5 * ( 1 - pow(j-jmax/2,2)/pow(jmax/2,2));
             U[id(0,j)] = 1.0;
         }
         COMP_FG2();
@@ -213,7 +237,7 @@ void grid::ALG_DISC(double Re_man){
 
 void grid::ALG_WORKING(){
     cout << "ALG_STEP" << endl;
-    READ_PARAMETER("Lid-Driven Cavity.in");
+    READ_PARAMETER("Cavity.in");
     wE = 2;
     wW = 2;
     wN = 2;
@@ -284,7 +308,7 @@ void grid::ALG_WORKING(){
 }
 
 void grid::ALG_WORKING2(){
-    READ_PARAMETER("Lid-Driven Cavity.in");
+    READ_PARAMETER("Cavity.in");
     imax = 30;
     jmax = 30;
     t_end = 0.3;

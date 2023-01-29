@@ -48,6 +48,9 @@ void grid::ADD_TO_FILE(string fname, vector<double> X){
 
 void grid::CC_AVERAGE_UV(){
     double average; // temporary variable for better readability
+    Ucc.clear();
+    Vcc.clear();
+    Pcc.clear();
     
     for (auto j=1; j != jmax + 1; ++j){
         for (auto i=1; i != imax + 1; ++i){
@@ -66,8 +69,7 @@ void grid::CC_AVERAGE_UV(){
 }
 
 void grid::OUTPUTVEC(string folder){
-    if (Ucc.empty() || Vcc.empty() || Pcc.empty())
-        CC_AVERAGE_UV();
+    CC_AVERAGE_UV();
     ADD_TO_FILE(folder+"Ucc.tsv", Ucc);
     ADD_TO_FILE(folder+"Vcc.tsv", Vcc);
     ADD_TO_FILE(folder+"Pcc.tsv", Pcc);

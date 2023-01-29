@@ -16,19 +16,32 @@ def readfile(fname):
     return dim,data
 
 # plotting parameters set by problem
-y_factor = 1
-broken_streamlines = True
-density=[0.5, 1]
-cbar_location = "right"
 
-for problem in ["Disc1","Disc20","Disc100","Lid-Driven Cavity", "Evangelion", "Disc"]:
+for problem in ["Cavity1","Cavity2","Cavity5","Cavity10","Cavity","Evangelion1","Evangelion20","Disc1","Disc20","Disc100"]:
     print(problem)
+
+    y_factor = 1
+    broken_streamlines = True
+    density=[0.5, 1]
+    cbar_location = "right"
+
     folder = problem + "/"
     if problem == "":
         folder = ""
-    if problem == "Lid-Driven Cavity":
+    if "Cavity" in problem:
         plt.figure(figsize=(16, 16), dpi=100)
         broken_streamlines = True
+        cbar_location = "right"
+    if problem == "Cavity":
+        folder = "Cavity/"
+    if problem == "Cavity1":
+        folder = "Cavity/1/"
+    if problem == "Cavity2":
+        folder = "Cavity/2/"
+    if problem == "Cavity5":
+        folder = "Cavity/5/"
+    if problem == "Cavity10":
+        folder = "Cavity/10/"
     if "Step" in problem:
         folder = "Step/"
         density=[4, 0.25]
@@ -38,7 +51,7 @@ for problem in ["Disc1","Disc20","Disc100","Lid-Driven Cavity", "Evangelion", "D
         plt.xlim(5, 20) 
         #y_factor = 3
     if "Disc" in problem:
-        broken_streamlines = True
+        broken_streamlines = False
         cbar_location = "bottom"
         plt.figure(figsize=(32, 8), dpi=100)
     if problem == "Disc1":
@@ -48,10 +61,17 @@ for problem in ["Disc1","Disc20","Disc100","Lid-Driven Cavity", "Evangelion", "D
     if problem == "Disc100":
         folder = "Disc/100.000000/"
     
-    if problem == "Evangelion":
+    if "Evangelion" in problem:
         density=[0.5, 1]
         cbar_location = "right"
         broken_streamlines = True
+    
+    if problem == "Evangelion1":
+        folder = "Evangelion/1.000000/"
+    if problem == "Evangelion20":
+        folder = "Evangelion/20.000000/"
+    if problem == "Evangelion100":
+        folder = "Evangelion/100.000000/"
 
     # read the grid data from file into a 1d array. first index time step. second index grid idex
     dim,U_1d = readfile(folder+"Ucc.tsv")
@@ -124,7 +144,7 @@ for problem in ["Disc1","Disc20","Disc100","Lid-Driven Cavity", "Evangelion", "D
     #temp = np.ma.array(temp)
     #plt.streamplot(X, Y, U, V, density=0.6, color='k', linewidth=lw)
     if "Disc" in problem:
-        streamlines = 20
+        streamlines = 10
         y_seed = np.linspace(1,3,streamlines)
         x_seed = dx*np.ones(streamlines)
         seed_points = np.array([x_seed,y_seed])
@@ -135,8 +155,13 @@ for problem in ["Disc1","Disc20","Disc100","Lid-Driven Cavity", "Evangelion", "D
     #plt.streamplot(X, Y, U, V, density=[0.5, 1], broken_streamlines=False)
 
     plt.imshow(P, extent = extent, origin="lower", cmap="Blues")
-    #cbar = plt.colorbar(label=r"$P$", location=cbar_location)
-    #cbar.ax.tick_params(labelsize=40)
+    if problem == "Cavity":
+        cb = plt.colorbar(location=cbar_location, shrink = 0.8)
+        cb.set_label(label=r"$P$",weight='bold', size=15)
+    if "Evangelion" in problem:
+        cb = plt.colorbar(location=cbar_location)
+        cb.set_label(label=r"$P$",weight='bold', size=40)
+        cb.ax.tick_params(labelsize=40)
 
 
     #
@@ -149,7 +174,10 @@ for problem in ["Disc1","Disc20","Disc100","Lid-Driven Cavity", "Evangelion", "D
     # Create a mask
     plt.imshow(mask, alpha=mask, extent=extent, origin="lower", cmap=colors.ListedColormap(['lightgrey']), norm=norm)
     plt.imshow(border, alpha=border, extent=extent, origin="lower", cmap=cmap, norm=norm)
-
+    
+    #plt.axis('off')
+    if problem != "Cavity":
+        plt.tick_params(axis='both', which='both', bottom=False, top=False, labelbottom=False, right=False, left=False, labelleft=False)
     plt.savefig("plots/"+problem+".pdf", bbox_inches='tight')
     plt.clf()
     print("\n")

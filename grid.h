@@ -112,7 +112,7 @@ public:
     // Algorithms
     void ALG_BASE();
     void ALG_WORKING();
-    void ALG_EVANGELION();
+    void ALG_EVANGELION(double V_in = 1);
     void ALG_DISC(double Re_man);
     void ALG_STEP(double Re_man = 0);
 

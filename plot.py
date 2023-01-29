@@ -21,11 +21,11 @@ broken_streamlines = True
 density=[0.5, 1]
 
 
-problem = 4
+problem = 1
 if problem == 0:
     folder = ""
 if problem == 1:
-    folder = "Lid-Driven Cavity/"
+    folder = "Cavity/"
 if problem == 2:
     print("Step")
     folder = "Step/"
@@ -135,5 +135,10 @@ norm = colors.BoundaryNorm(bounds, cmap.N)
 plt.imshow(border, alpha=border, extent=extent, origin="lower", cmap=cmap, norm=norm)
 
 plt.savefig("plot.pdf")
+plt.show()
+
+profile = U.T[imax-1]
+print(profile)
+plt.plot(dy/2 + np.arange(0,ylength,dy), profile)
 plt.show()
 
