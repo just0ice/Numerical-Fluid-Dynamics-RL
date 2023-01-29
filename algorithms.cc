@@ -171,7 +171,9 @@ void grid::ALG_EVANGELION(double V_in){
         SETBCOND2();
         // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
         for (auto i = 1; i != imax + 1; ++i){
-            V[id(i,0)] = V_in;
+            //V[id(i,0)] = V_in;
+            if (x(i) >= xlength/3 && x(i) <= xlength*2/3)
+                V[id(i,0)] = V_in * ( 1 - pow(x(i)-xlength/2,2)/pow(xlength/6,2));
         }
         COMP_FG2();
         COMP_RHS();
@@ -192,7 +194,6 @@ void grid::ALG_DISC(double Re_man){
     READ_PARAMETER("settings/Disc.in");
     //imax  = 440;
     //jmax = 80;
-    itermax = 100;
     if (Re_man != 0){
         Re = Re_man;
         cout << "Manual Reynolds Number Re = " << Re << endl;
@@ -203,8 +204,6 @@ void grid::ALG_DISC(double Re_man){
     // Algorihm 1. Base version, p. 40
     double t = 0;
     unsigned n = 1;
-    CLEAR_OUTPUT_FILES(folder);
-    CLEAR_OUTPUT_FILES();
 
     // general geometries
     DOMAIN_BOUNDARY();
@@ -217,8 +216,9 @@ void grid::ALG_DISC(double Re_man){
         SETBCOND2();
         // modify boundary conditions to set upper bound moving. Might move this to "boundary.cc" or "problem.cc" triggered by switch "problem" later
         for (auto j = 1; j != jmax + 1; ++j){
-            U[id(0,j)] = 1.5 * ( 1 - pow(j-jmax/2,2)/pow(jmax/2,2));
-            U[id(0,j)] = 1.0;
+            //U[id(0,j)] = 1.5 * ( 1 - pow(j-jmax/2,2)/pow(jmax/2,2));
+           // U[id(0,j)] = 1.0;
+            U[id(0,j)] = 1.5 * ( 1 - pow(y(j)-ylength/2,2)/pow(ylength/2,2));
         }
         COMP_FG2();
         COMP_RHS();
@@ -230,7 +230,8 @@ void grid::ALG_DISC(double Re_man){
     }
 
      // testing where the residual is high
-
+    CLEAR_OUTPUT_FILES(folder);
+    CLEAR_OUTPUT_FILES();
     OUTPUTVEC();
     OUTPUTVEC(folder);
 }

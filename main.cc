@@ -8,13 +8,12 @@ int main()
     //grid1.ALG_WORKING2();
     //grid1.ALG_BASE();
     
-    //grid1.ALG_DISC(1);
-    //grid2.ALG_DISC(20);
-    //grid3.ALG_DISC(1000);
-    //grid4.ALG_EVANGELION(1);
-    //grid5.ALG_EVANGELION(10);
-    //grid6.ALG_EVANGELION(100);
-    grid7.ALG_BASE2();
+    grid1.ALG_DISC(1);
+    grid2.ALG_DISC(20);
+    grid3.ALG_DISC(100);
+    grid4.ALG_EVANGELION(1);
+    grid5.ALG_EVANGELION(10);
+    //grid7.ALG_BASE2();
     
 
     return 0;
